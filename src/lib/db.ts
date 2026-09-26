@@ -90,6 +90,31 @@ CREATE TABLE IF NOT EXISTS asignaciones (
   notas TEXT NOT NULL DEFAULT ''
 );
 
+CREATE TABLE IF NOT EXISTS planes_nutricion (
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
+  fecha_inicio TEXT NOT NULL,
+  fecha_fin TEXT NOT NULL,
+  -- Documento JSON con el cálculo, los objetivos diarios y el menú de las 4 semanas.
+  plan TEXT NOT NULL,
+  notas TEXT NOT NULL DEFAULT '',
+  creado_en TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS seguimiento_nutricion (
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
+  plan_id INTEGER REFERENCES planes_nutricion(id) ON DELETE SET NULL,
+  fecha TEXT NOT NULL,
+  adherencia INTEGER NOT NULL,
+  agua_litros REAL,
+  energia INTEGER,
+  hambre INTEGER,
+  notas TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_planes_cliente ON planes_nutricion(cliente_id, fecha_inicio);
+CREATE INDEX IF NOT EXISTS idx_seguimiento_cliente ON seguimiento_nutricion(cliente_id, fecha);
 CREATE INDEX IF NOT EXISTS idx_mediciones_cliente ON mediciones(cliente_id, fecha);
 CREATE INDEX IF NOT EXISTS idx_composicion_cliente ON composicion(cliente_id, fecha);
 CREATE INDEX IF NOT EXISTS idx_rutina_ejercicios ON rutina_ejercicios(rutina_id, orden);

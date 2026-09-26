@@ -16,7 +16,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans md:flex-row">
-        <aside className="flex shrink-0 flex-col gap-4 bg-slate-900 px-4 py-4 md:sticky md:top-0 md:h-screen md:w-56 md:py-6">
+        <aside className="flex shrink-0 print:hidden flex-col gap-4 bg-slate-900 px-4 py-4 md:sticky md:top-0 md:h-screen md:w-56 md:py-6">
           <Link href="/" className="px-3 text-lg font-bold tracking-tight text-white">
             App <span className="text-emerald-400">Deportiva</span>
           </Link>

@@ -22,7 +22,7 @@ export default async function LayoutCliente({ params, children }: LayoutProps<"/
               <InsigniaObjetivo objetivo={cliente.objetivo} />
             </p>
           </div>
-          <Link href={`${base}/editar`} className="boton-secundario">
+          <Link href={`${base}/editar`} className="boton-secundario print:hidden">
             Editar perfil
           </Link>
         </div>
@@ -34,6 +34,7 @@ export default async function LayoutCliente({ params, children }: LayoutProps<"/
             { ruta: "composicion", texto: "Composición corporal" },
             { ruta: "recomposicion", texto: "Recomposición" },
             { ruta: "rutinas", texto: "Rutinas" },
+            { ruta: "nutricion", texto: "Nutrición" },
           ]}
         />
       </header>

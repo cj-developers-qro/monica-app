@@ -2,6 +2,7 @@
 // ejecute durante el prerenderizado (node:sqlite es síncrono).
 import { connection } from "next/server";
 import { db } from "./db";
+import type { PlanNutricional } from "./nutricion";
 import type { Nivel, Objetivo, TipoEjercicio } from "./objetivos";
 
 export type Onboarding = Record<string, string>;
@@ -252,4 +253,48 @@ export function agruparPorDia(items: ItemRutina[]) {
     else dias.set(item.dia, [item]);
   }
   return [...dias].map(([dia, items]) => ({ dia, items }));
+}
+
+// --- Nutrición --------------------------------------------------------------
+
+export type RegistroPlan = {
+  id: number;
+  cliente_id: number;
+  fecha_inicio: string;
+  fecha_fin: string;
+  notas: string;
+  creado_en: string;
+  plan: PlanNutricional;
+};
+
+export type Seguimiento = {
+  id: number;
+  cliente_id: number;
+  plan_id: number | null;
+  fecha: string;
+  adherencia: number;
+  agua_litros: number | null;
+  energia: number | null;
+  hambre: number | null;
+  notas: string | null;
+};
+
+export async function listarPlanes(clienteId: number): Promise<Omit<RegistroPlan, "plan">[]> {
+  await connection();
+  return db()
+    .prepare("SELECT id, cliente_id, fecha_inicio, fecha_fin, notas, creado_en FROM planes_nutricion WHERE cliente_id = ? ORDER BY fecha_inicio DESC, id DESC")
+    .all(clienteId) as Omit<RegistroPlan, "plan">[];
+}
+
+export async function obtenerPlan(clienteId: number, id: number): Promise<RegistroPlan | null> {
+  await connection();
+  const f = db().prepare("SELECT * FROM planes_nutricion WHERE id = ? AND cliente_id = ?").get(id, clienteId);
+  return f ? { ...(f as Omit<RegistroPlan, "plan">), plan: JSON.parse(String(f.plan)) } : null;
+}
+
+export async function listarSeguimiento(clienteId: number): Promise<Seguimiento[]> {
+  await connection();
+  return db()
+    .prepare("SELECT * FROM seguimiento_nutricion WHERE cliente_id = ? ORDER BY fecha, id")
+    .all(clienteId) as Seguimiento[];
 }

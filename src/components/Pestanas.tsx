@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export function Pestanas({ base, pestanas }: { base: string; pestanas: { ruta: string; texto: string }[] }) {
   const actual = usePathname();
   return (
-    <nav className="-mb-px flex gap-1 overflow-x-auto border-b border-slate-200">
+    <nav className="-mb-px flex print:hidden gap-1 overflow-x-auto border-b border-slate-200">
       {pestanas.map((p) => {
         const href = p.ruta ? `${base}/${p.ruta}` : base;
         return (
