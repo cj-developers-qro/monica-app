@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BotonImprimir } from "@/components/BotonImprimir";
 import { DetalleRutina } from "@/components/DetalleRutina";
 import { ImagenRutina } from "@/components/ImagenRutina";
-import { Logo, NOMBRE_APP } from "@/components/Logo";
+import { IconoMoniFit, NOMBRE_APP } from "@/components/Logo";
 import { requerirAccesoCliente } from "@/lib/auth";
 import { listarAsignaciones, listarPlanes, obtenerCliente, obtenerPlan } from "@/lib/datos";
 import { hoy } from "@/lib/formulario";
@@ -52,7 +52,7 @@ export default async function ExportarPlan({ params, searchParams }: PageProps<"
 
       <header className="flex items-center justify-between gap-4 border-b-2 border-pink-500 pb-4">
         <div className="flex items-center gap-3">
-          <Logo className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 text-white [&>svg]:size-7" />
+          <IconoMoniFit className="size-12" />
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-pink-600">{NOMBRE_APP} · Plan mensual</p>
             <h1 className="text-2xl font-bold text-slate-900">{cliente.nombre}</h1>

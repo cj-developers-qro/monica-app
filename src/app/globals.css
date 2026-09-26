@@ -9,6 +9,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-marca: var(--font-poppins);
 }
 
 :root {
@@ -26,8 +27,9 @@ body {
   @apply bg-gradient-to-b from-pink-600 to-rose-600 text-white;
 }
 
-.logo-marca {
-  @apply inline-flex size-10 shrink-0 items-center justify-center rounded-2xl bg-white/95 text-pink-600 shadow-sm;
+/* "Fit" del nombre de la marca en degradado rosa */
+.texto-degradado {
+  @apply bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent;
 }
 
 .fondo-acceso {

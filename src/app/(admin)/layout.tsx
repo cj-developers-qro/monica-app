@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo, LEMA_APP, NOMBRE_APP } from "@/components/Logo";
+import { MarcaEnBarra } from "@/components/Logo";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Navegacion } from "@/components/Navegacion";
 import { requerirAdmin } from "@/lib/auth";
@@ -11,12 +11,8 @@ export default async function LayoutAdmin({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="barra-marca flex shrink-0 flex-col gap-5 px-4 py-4 print:hidden md:sticky md:top-0 md:h-screen md:w-60 md:py-6">
-        <Link href="/" className="flex items-center gap-3 px-1">
-          <Logo />
-          <span className="leading-tight">
-            <span className="block text-lg font-bold tracking-tight">{NOMBRE_APP}</span>
-            <span className="block text-xs text-pink-100">{LEMA_APP}</span>
-          </span>
+        <Link href="/" className="px-1">
+          <MarcaEnBarra />
         </Link>
         <Navegacion
           enlaces={[

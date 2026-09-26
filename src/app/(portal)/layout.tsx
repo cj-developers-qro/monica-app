@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo, LEMA_APP, NOMBRE_APP } from "@/components/Logo";
+import { MarcaEnBarra } from "@/components/Logo";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { Navegacion } from "@/components/Navegacion";
 import { requerirCliente } from "@/lib/auth";
@@ -12,12 +12,8 @@ export default async function LayoutPortal({ children }: LayoutProps<"/">) {
     <div className="min-h-screen">
       <header className="barra-marca bg-gradient-to-r print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-4 md:px-8">
-          <Link href="/portal" className="flex items-center gap-3">
-            <Logo />
-            <span className="leading-tight">
-              <span className="block text-lg font-bold tracking-tight">{NOMBRE_APP}</span>
-              <span className="block text-xs text-pink-100">{LEMA_APP}</span>
-            </span>
+          <Link href="/portal">
+            <MarcaEnBarra />
           </Link>
           <Navegacion
             className="order-3 flex w-full gap-1 overflow-x-auto md:order-none md:w-auto md:flex-1"

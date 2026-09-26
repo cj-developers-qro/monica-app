@@ -1,4 +1,7 @@
-# Monica App · Entrenamiento y nutrición
+<p align="center"><img src="docs/logo-monifit.svg" alt="Logotipo de MoniFit" width="96"></p>
+
+<h1 align="center">MoniFit</h1>
+<p align="center"><strong>Entrenamiento y nutrición</strong></p>
 
 Aplicación para que **Moni** dé seguimiento completo a sus clientes: cuestionario de ingreso (onboarding),
 medidas, composición corporal, progreso de recomposición, rutinas de ejercicio y plan de nutrición mensual.
@@ -55,8 +58,14 @@ la aplicación revisa quién eres en cada pantalla y en cada acción.
    está instalada es **http://localhost:3000**).
 2. Verás la pantalla rosa de **Iniciar sesión**.
 3. Escribe tu correo **monica@moni-fit.com** y la **contraseña temporal** que te entregaron.
+
+<p align="center"><img src="docs/capturas/01-login.png" alt="Pantalla de inicio de sesión" width="640"></p>
+
 4. La app te pedirá crear **tu propia contraseña** (mínimo 8 caracteres). Escribe primero la temporal,
    luego tu nueva contraseña dos veces y presiona **Guardar y continuar**.
+
+<p align="center"><img src="docs/capturas/02-primer-ingreso.png" alt="Pantalla para crear tu propia contraseña" width="640"></p>
+
 5. Listo: entras a tu panel de **Clientes**.
 
 > 💡 Usa una contraseña que solo tú conozcas. Nadie (ni quien instaló la app) puede verla: la aplicación
@@ -68,6 +77,24 @@ la aplicación revisa quién eres en cada pantalla y en cada acción.
   el enlace **Mi cuenta** y el botón **Salir**.
 - **Clientes:** una tarjeta por cliente con su objetivo, peso actual, % de grasa, rutina asignada y si
   tiene o no acceso a la app.
+
+<p align="center"><img src="docs/capturas/03-clientes.png" alt="Panel de clientes de Moni"></p>
+
+
+### Clientes de demostración
+
+Para que puedas explorar la app desde el primer día, vienen cargados **3 clientes ficticios**, con 3 meses de
+medidas, rutina asignada, plan de nutrición del mes anterior con su seguimiento y plan del mes en curso:
+
+| Cliente (ficticio) | Objetivo | Qué muestra |
+|---|---|---|
+| **Valeria Ramírez Soto** (29 años) | Pérdida de grasa | Bajó de peso más lento de lo esperado: el plan del mes restó 150 kcal de forma automática. |
+| **Sofía Hernández Luna** (41 años) | Recomposición corporal | Peso casi igual, pero menos grasa y más músculo. Tiene intolerancia a la lactosa, hipotiroidismo y una rutina **personalizada** por su tendinitis. |
+| **Diego Morales Castro** (34 años) | Ganancia muscular | Sube de peso al ritmo esperado; alergia a las nueces. |
+
+Cada uno tiene también acceso al portal de clientes (correos `…demo@monifit.app`), para que veas lo que ve un
+cliente. Cuando ya no los necesites, elimínalos desde **Editar perfil y acceso → Eliminar cliente**, o pide
+que se ejecute `npm run demo -- --borrar`. Los clientes reales nunca se tocan.
 
 ---
 
@@ -85,6 +112,9 @@ la aplicación revisa quién eres en cada pantalla y en cada acción.
      **VII. Aspectos psicológicos**.
 3. Solo **nombre, sexo y objetivo** son obligatorios; lo demás puedes completarlo después.
 4. Presiona **Registrar cliente**. Se abre su **expediente**.
+
+<p align="center"><img src="docs/capturas/04-onboarding.png" alt="Cuestionario de onboarding de un cliente nuevo"></p>
+
 
 > El peso que escribas se guarda automáticamente como su **primer registro de composición corporal**.
 
@@ -107,14 +137,26 @@ Tiene estas pestañas:
 
 Arriba a la derecha está el botón **Editar perfil y acceso**.
 
+<p align="center"><img src="docs/capturas/05-perfil-clinico.png" alt="Perfil clínico con alertas de salud"></p>
+
+
 ### 3.2 Darle acceso a la app
 
 Mientras un cliente no tenga acceso, su perfil muestra el aviso *"aún no puede entrar a la app"*.
 
+<p align="center"><img src="docs/capturas/06-perfil-sin-acceso.png" alt="Aviso de cliente sin acceso a la app"></p>
+
+
 1. Entra al expediente del cliente → **Editar perfil y acceso** (o presiona **Crear acceso** en el aviso).
 2. En la sección **Acceso a la aplicación**, escribe el **correo del cliente** y presiona **Crear acceso**.
+
+<p align="center"><img src="docs/capturas/07-crear-acceso.png" alt="Sección para crear el acceso del cliente"></p>
+
 3. Aparece un recuadro verde con una **contraseña temporal** (por ejemplo `fresa-luna-4821`).
    **Cópiala en ese momento**: por seguridad no se vuelve a mostrar.
+
+<p align="center"><img src="docs/capturas/08-contrasena-temporal.png" alt="Contraseña temporal generada para el cliente"></p>
+
 4. Envíale al cliente:
    - la dirección de la aplicación,
    - su correo,
@@ -123,6 +165,9 @@ Mientras un cliente no tenga acceso, su perfil muestra el aviso *"aún no puede 
 
 En esa misma sección puedes ver el **estado** del acceso (activo, con contraseña temporal o desactivado) y la
 fecha de su **último ingreso**.
+
+<p align="center"><img src="docs/capturas/09-acceso-administrar.png" alt="Administración del acceso de un cliente"></p>
+
 
 ### 3.3 Registrar medidas con cinta (antropometría)
 
@@ -138,6 +183,9 @@ La pantalla calcula dos indicadores de salud:
 Con dos o más registros aparece la gráfica de cintura, cadera y cuello, y una fila de **Cambio total**.
 Para borrar un registro equivocado usa **Eliminar** en su renglón.
 
+<p align="center"><img src="docs/capturas/10-antropometria.png" alt="Registro de medidas con cinta métrica"></p>
+
+
 ### 3.4 Registrar composición corporal
 
 1. Expediente → pestaña **Composición corporal**.
@@ -146,6 +194,9 @@ Para borrar un registro equivocado usa **Eliminar** en su renglón.
 3. Presiona **Guardar registro**.
 
 La tabla calcula el **IMC** y convierte los porcentajes a **kilos de grasa** y **kilos de músculo**.
+
+<p align="center"><img src="docs/capturas/11-composicion.png" alt="Registro de composición corporal"></p>
+
 
 > 💡 Para que las comparaciones sean confiables, mide siempre con la misma báscula, en ayunas y a la misma hora.
 
@@ -166,6 +217,9 @@ Expediente → pestaña **Recomposición**. Necesita al menos **dos registros co
 
 > La báscula puede marcar casi lo mismo mientras el cuerpo cambia: la gráfica de grasa contra músculo lo muestra.
 
+<p align="center"><img src="docs/capturas/12-recomposicion.png" alt="Tablero de recomposición corporal"></p>
+
+
 ### 3.6 Asignar una rutina
 
 Expediente → pestaña **Rutinas**.
@@ -173,6 +227,9 @@ Expediente → pestaña **Rutinas**.
 - Arriba se muestra la **rutina activa** con la **imagen de los músculos que trabaja** (rojo intenso =
   músculo principal, rojo claro = secundario) y su plan por día: ejercicio, series, repeticiones y descanso.
 - Si el cliente tiene lesiones registradas, aparece un aviso amarillo para que adaptes los ejercicios.
+
+<p align="center"><img src="docs/capturas/13-rutina-activa.png" alt="Rutina activa del cliente con el diagrama de músculos"></p>
+
 - En **Recomendadas para (su objetivo)** tienes dos opciones por rutina:
   - **Asignar:** usa la rutina del catálogo tal cual.
   - **Personalizar:** crea una **copia solo para ese cliente** y abre el editor para ajustarla (por ejemplo,
@@ -183,11 +240,17 @@ Expediente → pestaña **Rutinas**.
 
 Solo puede haber **una rutina activa** por cliente: al asignar una nueva, la anterior pasa al historial.
 
+<p align="center"><img src="docs/capturas/14-rutinas-recomendadas.png" alt="Rutinas recomendadas e historial"></p>
+
+
 ### 3.7 Crear y editar rutinas y ejercicios
 
 #### Catálogo de rutinas (menú **Rutinas**)
 La app trae 8 rutinas base, dos por objetivo, con series, repeticiones y descansos adecuados a cada uno.
 Puedes filtrarlas por objetivo.
+
+<p align="center"><img src="docs/capturas/15-catalogo-rutinas.png" alt="Catálogo de rutinas"></p>
+
 
 - **+ Nueva rutina** o **Editar** abren el editor:
   1. Escribe nombre, objetivo, nivel, días por semana e indicaciones.
@@ -200,13 +263,22 @@ Puedes filtrarlas por objetivo.
   6. **Imagen propia (opcional):** si prefieres una foto o ilustración (PNG, JPG o WebP de hasta 4 MB),
      súbela ahí. Si no, la imagen de la rutina es el diagrama generado automáticamente.
   7. Presiona **Guardar rutina**.
+
+<p align="center"><img src="docs/capturas/16-editor-rutina.png" alt="Editor de rutinas"></p>
+
 - **Duplicar** crea una copia para hacer una variante.
 - **Descargar imagen** baja la imagen de músculos de la rutina.
 
 #### Catálogo de ejercicios (menú **Ejercicios**)
-Trae 45 ejercicios propuestos. Para crear uno nuevo presiona **+ Nuevo ejercicio** y marca, para cada músculo,
+Trae 45 ejercicios propuestos.
+
+<p align="center"><img src="docs/capturas/17-ejercicios.png" alt="Catálogo de ejercicios"></p>
+ Para crear uno nuevo presiona **+ Nuevo ejercicio** y marca, para cada músculo,
 si es **Principal**, **Secundario** o no participa (—). El dibujo se actualiza al momento: esa será la imagen
 del ejercicio. Un ejercicio que se usa en alguna rutina **no se puede eliminar** hasta quitarlo de ellas.
+
+<p align="center"><img src="docs/capturas/18-editar-ejercicio.png" alt="Edición de un ejercicio y sus músculos"></p>
+
 
 ### 3.8 Plan de nutrición mensual
 
@@ -234,6 +306,9 @@ Expediente → pestaña **Nutrición**. El cliente debe tener **al menos un peso
   Los **alimentos que no le gustan** quitan solo ese alimento, salvo que escriba una categoría como "pescado".
 
 #### Qué contiene el plan
+
+<p align="center"><img src="docs/capturas/19-nutricion-resumen.png" alt="Resumen del plan de nutrición"></p>
+
 - **Metas diarias:** calorías de día de entrenamiento y de descanso, proteína, carbohidratos, grasas y agua.
 - **Cómo se calculó** y **restricciones aplicadas**.
 - **Recomendaciones** personalizadas según sus respuestas: hidratación, digestión, alcohol, sueño, cocina,
@@ -243,6 +318,9 @@ Expediente → pestaña **Nutrición**. El cliente debe tener **al menos un peso
   **gramos y medidas caseras** (tazas, piezas, cucharadas) y el total del día.
 - **Lista de compras** de cada semana.
 
+<p align="center"><img src="docs/capturas/20-nutricion-menu.png" alt="Menú diario del plan de nutrición"></p>
+
+
 #### Seguimiento semanal
 Debajo del menú está **Seguimiento semanal**. Cada semana registra (o el cliente registra desde su portal):
 - la **adherencia al plan** en porcentaje (qué tanto lo cumplió),
@@ -251,6 +329,9 @@ Debajo del menú está **Seguimiento semanal**. Cada semana registra (o el clien
 - notas.
 
 La gráfica muestra la tendencia de la adherencia.
+
+<p align="center"><img src="docs/capturas/21-nutricion-seguimiento.png" alt="Seguimiento semanal, generar plan e historial"></p>
+
 
 #### El plan del mes siguiente
 Al terminar el mes presiona **Generar nuevo plan**. La app revisa **cómo cambió el peso** y **la adherencia**
@@ -266,6 +347,9 @@ Presiona **Exportar plan**. Se abre el plan completo (4 semanas, listas de compr
 - **Descargar PDF / Imprimir:** en la ventana de impresión elige **"Guardar como PDF"**.
 - **Descargar Excel (CSV):** una fila por alimento de cada comida de cada día, con gramos y macronutrientes.
 
+<p align="center"><img src="docs/capturas/22-exportar.png" alt="Plan mensual listo para imprimir o guardar como PDF" width="720"></p>
+
+
 ### 3.9 Cambios y bajas de clientes
 
 Todo está en **Editar perfil y acceso**:
@@ -279,11 +363,17 @@ Todo está en **Editar perfil y acceso**:
 | Baja temporal (deja de venir, pero quiero conservar su historial) | **Desactivar acceso**. No podrá entrar, pero su información se conserva. Puedes **Reactivar acceso** cuando quieras. |
 | Baja definitiva | Abajo de todo: **Eliminar cliente**. Borra todo su expediente y su acceso, y **no se puede deshacer**. |
 
+<p align="center"><img src="docs/capturas/23-baja.png" alt="Eliminar cliente (baja definitiva)"></p>
+
+
 ### 3.10 Tu cuenta y tu contraseña
 
 - **Mi cuenta** (barra rosa, abajo) → cambia tu contraseña cuando quieras. Al cambiarla se cierran las
   sesiones abiertas en otros equipos.
 - **Salir** cierra tu sesión. Hazlo siempre en computadoras que no sean tuyas.
+
+<p align="center"><img src="docs/capturas/24-mi-cuenta.png" alt="Mi cuenta: cambiar contraseña" width="640"></p>
+
 - Si escribes mal la contraseña **5 veces seguidas**, el acceso se bloquea **15 minutos** por seguridad.
 - **¿Olvidaste tu contraseña?** Pide a quien instaló la app que ejecute este comando en la computadora
   donde está instalada. Te dará una nueva contraseña temporal:
@@ -301,13 +391,27 @@ Todo está en **Editar perfil y acceso**:
    La primera vez te pedirá crear tu propia contraseña.
 2. **Mi resumen:** tu peso, % de grasa y % de músculo más recientes, cómo va tu progreso, las fechas de tu plan
    de nutrición y **tu rutina** con la imagen de los músculos que trabajas y los ejercicios de cada día.
+
+<p align="center"><img src="docs/capturas/25-portal-resumen.png" alt="Portal del cliente: Mi resumen"></p>
+
 3. **Mi progreso:** tus gráficas de peso, grasa y músculo, y la tabla con tus medidas.
+
+<p align="center"><img src="docs/capturas/26-portal-progreso.png" alt="Portal del cliente: Mi progreso"></p>
+
 4. **Mi nutrición:** tu menú del mes, semana por semana, con porciones y lista de compras.
    - Al final de cada semana llena **Seguimiento semanal**: qué porcentaje del plan cumpliste, cuánta agua
      tomaste y cómo te sentiste de energía y hambre. Con eso Moni ajusta tu siguiente plan.
+
+<p align="center"><img src="docs/capturas/27-portal-nutricion.png" alt="Portal del cliente: Mi nutrición"></p>
+
 5. **Exportar mi plan:** botón **Exportar mi plan** → **Descargar PDF / Imprimir** (elige *Guardar como PDF*)
    o **Descargar Excel (CSV)**.
 6. **Mi cuenta:** cambia tu contraseña. **Salir** cierra tu sesión.
+7. **En el celular:** la app se adapta a la pantalla. Para tenerla a la mano, en el navegador usa
+   *Compartir → Agregar a pantalla de inicio*; aparecerá con el ícono de MoniFit.
+
+<p align="center"><img src="docs/capturas/28-portal-movil.png" alt="Portal del cliente en el celular" width="320"></p>
+
 
 ¿Olvidaste tu contraseña? Pídele a Moni que te genere una nueva.
 
@@ -369,6 +473,12 @@ variante, usa **Duplicar**.
 
 *Esta sección es para la persona que instala o mantiene la aplicación.*
 
+### Marca
+El logotipo (`src/app/icon.svg`, copia en `docs/logo-monifit.svg`) es una "M" trazada como línea de pulso
+(entrenamiento) con una hoja (nutrición). En el código vive en `src/components/Logo.tsx`
+(`IconoMoniFit`, `NombreMoniFit`). El nombre usa la tipografía Poppins y `src/app/apple-icon.png` es el
+ícono para la pantalla de inicio del celular. Las capturas del manual están en `docs/capturas/`.
+
 ### Tecnología
 - **Next.js 16** (App Router, Server Components y Server Actions) + **Tailwind CSS 4**. Un solo estilo
   compartido (rosa y blanco) definido en `src/app/globals.css`, con las clases `boton`, `campo`, `tarjeta`,
@@ -393,6 +503,10 @@ Para desarrollo: `npm run dev`.
 `npm run admin -- <correo> [nombre]` crea la cuenta de administradora o, si ya existe, le asigna una **nueva
 contraseña temporal** y cierra sus sesiones. Sirve también para recuperar el acceso de Moni.
 
+`npm run demo` carga (o recarga) los 3 clientes de demostración con sus planes, usando el mismo motor de
+nutrición de la app, y muestra las contraseñas temporales de su portal. `npm run demo -- --borrar` los elimina.
+Solo afecta a los clientes marcados como demostración.
+
 ### Datos y respaldos <a id="respaldos"></a>
 Todos los datos viven en la carpeta **`data/`** (ignorada por git):
 - `data/app-deportiva.db` — base de datos: clientes, medidas, rutinas, planes, usuarios.
@@ -403,22 +517,34 @@ seguro. Para restaurar, vuelve a colocarla. Con la variable `DATA_DIR` puedes gu
 
 ### Acceso de los clientes desde su celular
 Con `npm start` la app solo es accesible en esa computadora (y en la misma red Wi-Fi mediante
-`http://<IP-de-la-computadora>:3000`). Para que los clientes entren desde cualquier lugar hay que
-**publicarla en un servidor con HTTPS**, por ejemplo una VPS con un proxy inverso como Caddy o Nginx, o un
-túnel de Cloudflare. El proxy debe enviar el encabezado `X-Forwarded-Proto: https`: así la cookie de sesión
-se marca como segura. Conserva la carpeta `data/` en un disco persistente.
+`http://<IP-de-la-computadora>:3000`). Para entrar desde cualquier lugar hay que servirla con **HTTPS**.
+
+**Para pruebas o demostraciones (túnel rápido de Cloudflare, sin cuenta):**
+```bash
+npm run build && npm start                         # terminal 1
+cloudflared tunnel --no-autoupdate --url http://localhost:3000   # terminal 2
+```
+`cloudflared` muestra una dirección `https://<palabras>.trycloudflare.com`. Funciona mientras las dos
+terminales y la computadora estén encendidas, y **cambia cada vez que se reinicia el túnel**.
+
+**Para uso diario:** usar un túnel con nombre de Cloudflare en un dominio propio (dirección fija), o una VPS con un
+proxy inverso como Caddy o Nginx. El proxy debe enviar el encabezado `X-Forwarded-Proto: https`: así la cookie
+de sesión se marca como segura. Conserva la carpeta `data/` en un disco persistente.
 
 ### Estructura
 ```
 scripts/admin.mjs            crea o restablece la cuenta de administradora
+scripts/datos-demo.mts       clientes de demostración (npm run demo)
+scripts/cargador.mjs         permite a Node ejecutar los módulos TypeScript de src/ desde los scripts
 src/proxy.ts                 sin sesión → /login (filtro inicial)
 src/app/(acceso)/            login y "Mi cuenta"
 src/app/(admin)/             panel de Moni: clientes, rutinas, ejercicios
 src/app/(portal)/portal/     portal del cliente: resumen, progreso, nutrición
 src/app/(exportar)/          plan mensual imprimible y descarga CSV
 src/app/acciones/            acciones del servidor (cada una verifica el rol)
-src/components/              componentes compartidos (vistas de plan, recomposición, formularios…)
-src/lib/auth.ts              contraseñas, sesiones y verificación de roles
+src/components/              componentes compartidos (logotipo, vistas de plan, recomposición, formularios…)
+src/lib/auth.ts              sesiones y verificación de roles
+src/lib/contrasenas.ts       cifrado (scrypt) y contraseñas temporales
 src/lib/datos.ts             consultas; cada una verifica quién la pide
 src/lib/nutricion.ts         motor del plan de nutrición
 src/lib/recomposicion.ts     motor del diagnóstico de recomposición

@@ -405,17 +405,33 @@ export function ajusteAdaptativo(objetivo: Objetivo, pesos: { fecha: string; pes
     return { kcal: 0, motivo: `Adherencia del mes anterior de ${Math.round(adherencia)} %: se mantienen las calorías y se trabaja el cumplimiento.` };
   }
   const ritmo = ((ultimo.peso - primero.peso) / primero.peso) * 100 / semanas;
-  const r = ritmo.toFixed(2);
-  const reglas: Record<Objetivo, [number, number, number, number]> = {
-    // [ritmo mínimo, ajuste si está por debajo, ritmo máximo, ajuste si está por encima] en % de peso por semana
-    perdida_grasa: [-1.0, 150, -0.25, -150],
-    ganancia_muscular: [0.1, 150, 0.5, -100],
-    recomposicion: [-0.75, 100, 0.25, -100],
-    rendimiento: [-0.5, 100, 0.5, -100],
+  const pct = `${Math.abs(ritmo).toFixed(2)} %`;
+  const cambio = ritmo < 0 ? `bajó ${pct}` : `subió ${pct}`;
+  // [ritmo mínimo, ritmo máximo] esperado en % de peso por semana, y mensajes en lenguaje claro.
+  const reglas: Record<Objetivo, { min: number; max: number; bajo: [number, string]; alto: [number, string] }> = {
+    perdida_grasa: {
+      min: -1.0, max: -0.25,
+      bajo: [150, `El peso ${cambio} por semana, más rápido de lo recomendable (máximo 1 %): se suman 150 kcal para cuidar el músculo.`],
+      alto: [-150, `El peso ${cambio} por semana; lo esperado es bajar entre 0.25 y 1 %: se restan 150 kcal.`],
+    },
+    ganancia_muscular: {
+      min: 0.1, max: 0.5,
+      bajo: [150, `El peso ${cambio} por semana; lo esperado es subir entre 0.1 y 0.5 %: se suman 150 kcal.`],
+      alto: [-100, `El peso ${cambio} por semana, más de lo recomendable (máximo 0.5 %): se restan 100 kcal para limitar la ganancia de grasa.`],
+    },
+    recomposicion: {
+      min: -0.75, max: 0.25,
+      bajo: [100, `El peso ${cambio} por semana; en recomposición debe mantenerse casi estable: se suman 100 kcal para cuidar el músculo.`],
+      alto: [-100, `El peso ${cambio} por semana; en recomposición debe mantenerse casi estable: se restan 100 kcal.`],
+    },
+    rendimiento: {
+      min: -0.5, max: 0.5,
+      bajo: [100, `El peso ${cambio} por semana; para rendimiento conviene mantenerlo: se suman 100 kcal.`],
+      alto: [-100, `El peso ${cambio} por semana; para rendimiento conviene mantenerlo: se restan 100 kcal.`],
+    },
   };
-  const [min, subir, max, bajar] = reglas[objetivo];
-  const rango = `ritmo esperado: ${min} a ${max} % por semana`;
-  if (ritmo < min) return { kcal: subir, motivo: `El peso cambió ${r} % por semana, por debajo del ${rango}: +${subir} kcal.` };
-  if (ritmo > max) return { kcal: bajar, motivo: `El peso cambió ${r} % por semana, por encima del ${rango}: ${bajar} kcal.` };
-  return { kcal: 0, motivo: `El peso cambió ${r} % por semana, dentro del ritmo esperado: se mantienen las calorías.` };
+  const regla = reglas[objetivo];
+  if (ritmo < regla.min) return { kcal: regla.bajo[0], motivo: regla.bajo[1] };
+  if (ritmo > regla.max) return { kcal: regla.alto[0], motivo: regla.alto[1] };
+  return { kcal: 0, motivo: `El peso ${cambio} por semana, dentro de lo esperado para el objetivo: se mantienen las calorías.` };
 }

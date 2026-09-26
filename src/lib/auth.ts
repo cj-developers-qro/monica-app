@@ -1,6 +1,6 @@
 // Autenticación y autorización: contraseñas, sesiones y las verificaciones de rol que usan
 // las consultas (lib/datos.ts), las páginas y las acciones del servidor.
-import { createHash, randomBytes, randomInt, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -23,27 +23,7 @@ export type Usuario = {
 
 // --- Contraseñas ---------------------------------------------------------------
 
-export function cifrarContrasena(contrasena: string): string {
-  const sal = randomBytes(16);
-  const hash = scryptSync(contrasena, sal, 64);
-  return `scrypt$${sal.toString("base64")}$${hash.toString("base64")}`;
-}
-
-export function verificarContrasena(contrasena: string, guardado: string): boolean {
-  const [, sal, hash] = guardado.split("$");
-  if (!sal || !hash) return false;
-  const esperado = Buffer.from(hash, "base64");
-  const calculado = scryptSync(contrasena, Buffer.from(sal, "base64"), esperado.length);
-  return timingSafeEqual(calculado, esperado);
-}
-
-const PALABRAS = ["rosa", "mango", "fresa", "luna", "sol", "brisa", "coral", "menta", "perla", "nube", "palma", "lima", "flor", "miel", "cielo", "roble"];
-
-/** Contraseña temporal fácil de dictar, p. ej. "fresa-luna-4821". */
-export function contrasenaTemporal() {
-  const p = () => PALABRAS[randomInt(PALABRAS.length)];
-  return `${p()}-${p()}-${randomInt(1000, 10000)}`;
-}
+export { cifrarContrasena, contrasenaTemporal, verificarContrasena } from "./contrasenas";
 
 export function validarNuevaContrasena(nueva: string, confirmacion: string): string | null {
   if (nueva.length < LONGITUD_MINIMA) return `La contraseña debe tener al menos ${LONGITUD_MINIMA} caracteres.`;

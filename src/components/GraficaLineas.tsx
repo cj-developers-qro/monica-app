@@ -95,9 +95,9 @@ export function GraficaLineas({ fechas, series, unidad, titulo }: { fechas: stri
       <div ref={contenedor} className="relative">
         <svg
           viewBox={`0 0 ${ancho} ${ALTO}`}
-          width={ancho}
-          height={ALTO}
-          className="block touch-none select-none"
+          // Ocupa el ancho disponible (nunca se desborda); una vez medido, la escala es 1:1 y el texto
+          // conserva su tamaño real.
+          className="block h-auto w-full touch-none select-none"
           onPointerMove={alMover}
           onPointerLeave={() => setActivo(null)}
           role="img"
