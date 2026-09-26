@@ -9,7 +9,7 @@ export function DetalleRutina({ items }: { items: ItemRutina[] }) {
     <div className="space-y-4">
       {agruparPorDia(items).map(({ dia, items }) => (
         <section key={dia} className="tarjeta overflow-hidden">
-          <h3 className="border-b border-slate-100 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-800">{dia}</h3>
+          <h3 className="border-b border-pink-100 bg-pink-50/60 px-4 py-2 text-sm font-semibold text-slate-800">{dia}</h3>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-sm">
               <thead className="text-left text-xs text-slate-500">

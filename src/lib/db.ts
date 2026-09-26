@@ -1,125 +1,15 @@
 // Conexión a SQLite usando el módulo nativo de Node (node:sqlite), sin dependencias externas.
 // El esquema se crea y el catálogo se siembra automáticamente la primera vez.
 import { DatabaseSync } from "node:sqlite";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { EJERCICIOS_SEMILLA, RUTINAS_SEMILLA } from "./catalogo-semilla";
 
 export const DIRECTORIO_DATOS = process.env.DATA_DIR ?? path.join(process.cwd(), "data");
 export const DIRECTORIO_IMAGENES = path.join(/*turbopackIgnore: true*/ DIRECTORIO_DATOS, "imagenes");
 
-const ESQUEMA = `
-CREATE TABLE IF NOT EXISTS clientes (
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL,
-  edad INTEGER,
-  sexo TEXT NOT NULL CHECK (sexo IN ('F', 'M')),
-  estatura_cm REAL,
-  objetivo TEXT NOT NULL,
-  onboarding TEXT NOT NULL DEFAULT '{}',
-  creado_en TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS mediciones (
-  id INTEGER PRIMARY KEY,
-  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-  fecha TEXT NOT NULL,
-  brazo_izq REAL, brazo_der REAL,
-  pierna_izq REAL, pierna_der REAL,
-  pantorrilla_izq REAL, pantorrilla_der REAL,
-  cintura REAL, cuello REAL, cadera REAL,
-  notas TEXT
-);
-
-CREATE TABLE IF NOT EXISTS composicion (
-  id INTEGER PRIMARY KEY,
-  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-  fecha TEXT NOT NULL,
-  peso_kg REAL NOT NULL,
-  estatura_cm REAL,
-  grasa_pct REAL,
-  musculo_pct REAL,
-  grasa_visceral REAL,
-  notas TEXT
-);
-
-CREATE TABLE IF NOT EXISTS ejercicios (
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL,
-  tipo TEXT NOT NULL,
-  equipo TEXT NOT NULL DEFAULT '',
-  musculos_principales TEXT NOT NULL DEFAULT '[]',
-  musculos_secundarios TEXT NOT NULL DEFAULT '[]',
-  descripcion TEXT NOT NULL DEFAULT ''
-);
-
-CREATE TABLE IF NOT EXISTS rutinas (
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL,
-  objetivo TEXT NOT NULL,
-  nivel TEXT NOT NULL,
-  dias_semana INTEGER NOT NULL DEFAULT 3,
-  descripcion TEXT NOT NULL DEFAULT '',
-  -- NULL = rutina del catálogo; con valor = rutina personalizada para ese cliente.
-  cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
-  origen_id INTEGER REFERENCES rutinas(id) ON DELETE SET NULL,
-  -- Imagen propia opcional; si no hay, se genera el diagrama de músculos trabajados.
-  imagen TEXT,
-  actualizado_en TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS rutina_ejercicios (
-  id INTEGER PRIMARY KEY,
-  rutina_id INTEGER NOT NULL REFERENCES rutinas(id) ON DELETE CASCADE,
-  ejercicio_id INTEGER NOT NULL REFERENCES ejercicios(id) ON DELETE RESTRICT,
-  dia TEXT NOT NULL,
-  orden INTEGER NOT NULL,
-  series INTEGER NOT NULL DEFAULT 3,
-  repeticiones TEXT NOT NULL DEFAULT '10',
-  descanso_seg INTEGER NOT NULL DEFAULT 60,
-  notas TEXT NOT NULL DEFAULT ''
-);
-
-CREATE TABLE IF NOT EXISTS asignaciones (
-  id INTEGER PRIMARY KEY,
-  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-  rutina_id INTEGER NOT NULL REFERENCES rutinas(id) ON DELETE CASCADE,
-  fecha_inicio TEXT NOT NULL,
-  fecha_fin TEXT,
-  activa INTEGER NOT NULL DEFAULT 1,
-  notas TEXT NOT NULL DEFAULT ''
-);
-
-CREATE TABLE IF NOT EXISTS planes_nutricion (
-  id INTEGER PRIMARY KEY,
-  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-  fecha_inicio TEXT NOT NULL,
-  fecha_fin TEXT NOT NULL,
-  -- Documento JSON con el cálculo, los objetivos diarios y el menú de las 4 semanas.
-  plan TEXT NOT NULL,
-  notas TEXT NOT NULL DEFAULT '',
-  creado_en TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS seguimiento_nutricion (
-  id INTEGER PRIMARY KEY,
-  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
-  plan_id INTEGER REFERENCES planes_nutricion(id) ON DELETE SET NULL,
-  fecha TEXT NOT NULL,
-  adherencia INTEGER NOT NULL,
-  agua_litros REAL,
-  energia INTEGER,
-  hambre INTEGER,
-  notas TEXT
-);
-
-CREATE INDEX IF NOT EXISTS idx_planes_cliente ON planes_nutricion(cliente_id, fecha_inicio);
-CREATE INDEX IF NOT EXISTS idx_seguimiento_cliente ON seguimiento_nutricion(cliente_id, fecha);
-CREATE INDEX IF NOT EXISTS idx_mediciones_cliente ON mediciones(cliente_id, fecha);
-CREATE INDEX IF NOT EXISTS idx_composicion_cliente ON composicion(cliente_id, fecha);
-CREATE INDEX IF NOT EXISTS idx_rutina_ejercicios ON rutina_ejercicios(rutina_id, orden);
-CREATE INDEX IF NOT EXISTS idx_asignaciones_cliente ON asignaciones(cliente_id, activa);
-`;
+// El esquema vive en un archivo .sql para compartirlo con el comando `npm run admin`.
+const ESQUEMA = readFileSync(path.join(process.cwd(), "src", "lib", "esquema.sql"), "utf8");
 
 function sembrarCatalogo(db: DatabaseSync) {
   const hay = db.prepare("SELECT COUNT(*) AS n FROM ejercicios").get() as { n: number };

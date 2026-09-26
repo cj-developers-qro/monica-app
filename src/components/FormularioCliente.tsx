@@ -58,9 +58,9 @@ export function FormularioCliente({
             {LISTA_OBJETIVOS.map((o) => (
               <label
                 key={o}
-                className="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-200 p-3 text-sm has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50"
+                className="flex cursor-pointer items-start gap-2 rounded-xl border border-pink-100 p-3 text-sm has-[:checked]:border-pink-500 has-[:checked]:bg-pink-50"
               >
-                <input type="radio" name="objetivo" value={o} required defaultChecked={cliente?.objetivo === o} className="mt-0.5 accent-emerald-600" />
+                <input type="radio" name="objetivo" value={o} required defaultChecked={cliente?.objetivo === o} className="mt-0.5 accent-pink-600" />
                 <span>
                   <span className="font-medium text-slate-800">{OBJETIVOS[o].nombre}</span>
                   <span className="mt-0.5 block text-xs text-slate-500">{OBJETIVOS[o].repeticiones} reps · {OBJETIVOS[o].descanso}</span>
@@ -93,7 +93,7 @@ function Seccion({ numero, titulo, children }: { numero: number; titulo: string;
   return (
     <section className="tarjeta p-5">
       <h2 className="mb-4 text-base font-semibold text-slate-900">
-        <span className="mr-2 text-emerald-600">{romanos[numero - 1]}.</span>
+        <span className="mr-2 text-pink-600">{romanos[numero - 1]}.</span>
         {titulo}
       </h2>
       {children}

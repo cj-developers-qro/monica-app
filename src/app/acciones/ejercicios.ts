@@ -2,12 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requerirAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { esMusculo } from "@/lib/musculos";
 import { TIPOS_EJERCICIO } from "@/lib/objetivos";
 import { texto, type EstadoFormulario } from "@/lib/formulario";
 
 export async function guardarEjercicio(id: number | null, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const nombre = texto(fd, "nombre");
   const tipo = texto(fd, "tipo");
   const principales = fd.getAll("principales").map(String).filter(esMusculo);
@@ -33,6 +35,7 @@ export async function guardarEjercicio(id: number | null, _: EstadoFormulario, f
 }
 
 export async function eliminarEjercicio(id: number, _estado: EstadoFormulario): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const uso = db().prepare("SELECT COUNT(DISTINCT rutina_id) AS n FROM rutina_ejercicios WHERE ejercicio_id = ?").get(id) as { n: number };
   if (uso.n > 0) {
     return { error: `No se puede eliminar: se usa en ${uso.n} rutina${uso.n === 1 ? "" : "s"}. Quítalo de ellas primero.` };

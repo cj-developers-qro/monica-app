@@ -3,23 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const ENLACES = [
-  { href: "/", texto: "Clientes", activo: (p: string) => p === "/" || p.startsWith("/clientes") },
-  { href: "/rutinas", texto: "Rutinas", activo: (p: string) => p.startsWith("/rutinas") },
-  { href: "/ejercicios", texto: "Ejercicios", activo: (p: string) => p.startsWith("/ejercicios") },
-];
+export type EnlaceMenu = { href: string; texto: string; /** Rutas adicionales que también marcan el enlace como activo. */ prefijos?: string[] };
 
-export function Navegacion() {
+export function Navegacion({ enlaces, className = "flex gap-1 md:flex-col" }: { enlaces: EnlaceMenu[]; className?: string }) {
   const ruta = usePathname();
+  const activo = (e: EnlaceMenu) =>
+    ruta === e.href || [e.href === "/" ? null : e.href, ...(e.prefijos ?? [])].some((p) => p && ruta.startsWith(p));
   return (
-    <nav className="flex gap-1 md:flex-col">
-      {ENLACES.map((e) => (
-        <Link
-          key={e.href}
-          href={e.href}
-          aria-current={e.activo(ruta) ? "page" : undefined}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white aria-[current=page]:bg-emerald-600 aria-[current=page]:text-white"
-        >
+    <nav className={className}>
+      {enlaces.map((e) => (
+        <Link key={e.href} href={e.href} aria-current={activo(e) ? "page" : undefined} className="menu-enlace">
           {e.texto}
         </Link>
       ))}

@@ -1,6 +1,9 @@
-// Consultas de lectura. Todas esperan a connection() para que Next.js no las
-// ejecute durante el prerenderizado (node:sqlite es síncrono).
+// Consultas de lectura (capa de acceso a datos). Cada consulta verifica primero la sesión:
+// las de catálogo y listado general son solo para la administradora; las de un expediente
+// permiten a la administradora o al propio cliente. Así ninguna página puede mostrar datos
+// ajenos aunque se olvide una verificación en la interfaz.
 import { connection } from "next/server";
+import { requerirAccesoCliente, requerirAdmin, type Usuario } from "./auth";
 import { db } from "./db";
 import type { PlanNutricional } from "./nutricion";
 import type { Nivel, Objetivo, TipoEjercicio } from "./objetivos";
@@ -115,17 +118,21 @@ export type ResumenCliente = Cliente & {
   ultimo_peso: number | null;
   ultima_grasa: number | null;
   rutina_activa: string | null;
+  /** null = sin acceso a la app; 1 = activo; 0 = desactivado. */
+  acceso: number | null;
 };
 
 export async function listarClientes(): Promise<ResumenCliente[]> {
   await connection();
+  await requerirAdmin();
   const filas = db()
     .prepare(
       `SELECT c.*,
          (SELECT peso_kg FROM composicion WHERE cliente_id = c.id ORDER BY fecha DESC, id DESC LIMIT 1) AS ultimo_peso,
          (SELECT grasa_pct FROM composicion WHERE cliente_id = c.id AND grasa_pct IS NOT NULL ORDER BY fecha DESC, id DESC LIMIT 1) AS ultima_grasa,
          (SELECT r.nombre FROM asignaciones a JOIN rutinas r ON r.id = a.rutina_id
-            WHERE a.cliente_id = c.id AND a.activa = 1 ORDER BY a.fecha_inicio DESC LIMIT 1) AS rutina_activa
+            WHERE a.cliente_id = c.id AND a.activa = 1 ORDER BY a.fecha_inicio DESC LIMIT 1) AS rutina_activa,
+         (SELECT activo FROM usuarios WHERE cliente_id = c.id) AS acceso
        FROM clientes c ORDER BY c.nombre`,
     )
     .all();
@@ -134,17 +141,20 @@ export async function listarClientes(): Promise<ResumenCliente[]> {
     ultimo_peso: f.ultimo_peso as number | null,
     ultima_grasa: f.ultima_grasa as number | null,
     rutina_activa: f.rutina_activa as string | null,
+    acceso: f.acceso as number | null,
   }));
 }
 
 export async function obtenerCliente(id: number): Promise<Cliente | null> {
   await connection();
+  await requerirAccesoCliente(id);
   const f = db().prepare("SELECT * FROM clientes WHERE id = ?").get(id);
   return f ? aCliente(f) : null;
 }
 
 export async function listarMediciones(clienteId: number): Promise<Medicion[]> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   return db()
     .prepare("SELECT * FROM mediciones WHERE cliente_id = ? ORDER BY fecha, id")
     .all(clienteId) as Medicion[];
@@ -152,6 +162,7 @@ export async function listarMediciones(clienteId: number): Promise<Medicion[]> {
 
 export async function listarComposicion(clienteId: number): Promise<Composicion[]> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   return db()
     .prepare("SELECT * FROM composicion WHERE cliente_id = ? ORDER BY fecha, id")
     .all(clienteId) as Composicion[];
@@ -161,6 +172,7 @@ export async function listarComposicion(clienteId: number): Promise<Composicion[
 
 export async function listarEjercicios(): Promise<(Ejercicio & { usos: number })[]> {
   await connection();
+  await requerirAdmin();
   return db()
     .prepare(
       `SELECT e.*, (SELECT COUNT(DISTINCT rutina_id) FROM rutina_ejercicios WHERE ejercicio_id = e.id) AS usos
@@ -172,6 +184,7 @@ export async function listarEjercicios(): Promise<(Ejercicio & { usos: number })
 
 export async function obtenerEjercicio(id: number): Promise<Ejercicio | null> {
   await connection();
+  await requerirAdmin();
   const f = db().prepare("SELECT * FROM ejercicios WHERE id = ?").get(id);
   return f ? aEjercicio(f) : null;
 }
@@ -220,6 +233,7 @@ function conItems(rutinas: Rutina[]): RutinaConEjercicios[] {
 /** Rutinas del catálogo (sin cliente) y, si se pide, también las personalizadas. */
 export async function listarRutinas(opciones: { incluirPersonalizadas?: boolean } = {}): Promise<RutinaConEjercicios[]> {
   await connection();
+  await requerirAdmin();
   const filtro = opciones.incluirPersonalizadas ? "" : "WHERE r.cliente_id IS NULL";
   const rutinas = db().prepare(`${SELECT_RUTINA} ${filtro} ORDER BY r.cliente_id IS NOT NULL, r.objetivo, r.nombre`).all() as Rutina[];
   return conItems(rutinas);
@@ -227,12 +241,14 @@ export async function listarRutinas(opciones: { incluirPersonalizadas?: boolean 
 
 export async function obtenerRutina(id: number): Promise<RutinaConEjercicios | null> {
   await connection();
+  await requerirAdmin();
   const r = db().prepare(`${SELECT_RUTINA} WHERE r.id = ?`).get(id) as Rutina | undefined;
   return r ? conItems([r])[0] : null;
 }
 
 export async function listarAsignaciones(clienteId: number): Promise<Asignacion[]> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   const filas = db()
     .prepare("SELECT * FROM asignaciones WHERE cliente_id = ? ORDER BY activa DESC, fecha_inicio DESC, id DESC")
     .all(clienteId) as Omit<Asignacion, "rutina">[];
@@ -281,6 +297,7 @@ export type Seguimiento = {
 
 export async function listarPlanes(clienteId: number): Promise<Omit<RegistroPlan, "plan">[]> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   return db()
     .prepare("SELECT id, cliente_id, fecha_inicio, fecha_fin, notas, creado_en FROM planes_nutricion WHERE cliente_id = ? ORDER BY fecha_inicio DESC, id DESC")
     .all(clienteId) as Omit<RegistroPlan, "plan">[];
@@ -288,13 +305,42 @@ export async function listarPlanes(clienteId: number): Promise<Omit<RegistroPlan
 
 export async function obtenerPlan(clienteId: number, id: number): Promise<RegistroPlan | null> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   const f = db().prepare("SELECT * FROM planes_nutricion WHERE id = ? AND cliente_id = ?").get(id, clienteId);
   return f ? { ...(f as Omit<RegistroPlan, "plan">), plan: JSON.parse(String(f.plan)) } : null;
 }
 
 export async function listarSeguimiento(clienteId: number): Promise<Seguimiento[]> {
   await connection();
+  await requerirAccesoCliente(clienteId);
   return db()
     .prepare("SELECT * FROM seguimiento_nutricion WHERE cliente_id = ? ORDER BY fecha, id")
     .all(clienteId) as Seguimiento[];
+}
+
+/**
+ * Rutina para servir su imagen: la administradora puede ver cualquiera; un cliente, solo
+ * las que tiene o tuvo asignadas.
+ */
+export async function obtenerRutinaVisible(id: number, usuario: Usuario): Promise<RutinaConEjercicios | null> {
+  await connection();
+  if (usuario.rol !== "admin") {
+    const asignada = db().prepare("SELECT 1 FROM asignaciones WHERE rutina_id = ? AND cliente_id = ?").get(id, usuario.cliente_id);
+    if (!asignada) return null;
+  }
+  const r = db().prepare(`${SELECT_RUTINA} WHERE r.id = ?`).get(id) as Rutina | undefined;
+  return r ? conItems([r])[0] : null;
+}
+
+/** Datos de acceso del cliente (sin el hash de la contraseña). Solo la administradora. */
+export async function obtenerAcceso(clienteId: number) {
+  await connection();
+  await requerirAdmin();
+  return (
+    (db()
+      .prepare("SELECT id, usuario, activo, debe_cambiar, ultimo_acceso, bloqueado_hasta FROM usuarios WHERE cliente_id = ?")
+      .get(clienteId) as
+      | { id: number; usuario: string; activo: number; debe_cambiar: number; ultimo_acceso: string | null; bloqueado_hasta: string | null }
+      | undefined) ?? null
+  );
 }

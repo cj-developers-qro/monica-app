@@ -23,14 +23,19 @@ export function Formulario({
     <form action={accionFormulario} className={className}>
       {children}
       {estado?.error && (
-        <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+        <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           {estado.error}
         </p>
       )}
       {estado?.ok && (
-        <p role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          {mensajeOk}
-        </p>
+        <div role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <p>{estado.mensaje ?? mensajeOk}</p>
+          {estado.secreto && (
+            <p className="mt-2 select-all rounded-lg border border-emerald-300 bg-white px-3 py-2 text-center font-mono text-base font-semibold tracking-wide text-slate-900">
+              {estado.secreto}
+            </p>
+          )}
+        </div>
       )}
     </form>
   );

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requerirAccesoCliente, requerirAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { entero, fecha, numero, texto, type EstadoFormulario } from "@/lib/formulario";
 import { ajusteAdaptativo, generarPlan } from "@/lib/nutricion";
@@ -10,6 +11,7 @@ import { esObjetivo } from "@/lib/objetivos";
 type Fila = Record<string, unknown>;
 
 export async function generarPlanNutricional(clienteId: number, _estado: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const cliente = db().prepare("SELECT * FROM clientes WHERE id = ?").get(clienteId) as Fila | undefined;
   if (!cliente || !esObjetivo(cliente.objetivo)) return { error: "El cliente no existe." };
 
@@ -73,12 +75,18 @@ export async function generarPlanNutricional(clienteId: number, _estado: EstadoF
 }
 
 export async function eliminarPlan(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM planes_nutricion WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath(`/clientes/${clienteId}`, "layout");
   redirect(`/clientes/${clienteId}/nutricion`);
 }
 
 export async function registrarSeguimiento(clienteId: number, planId: number | null, _estado: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  // La administradora o el propio cliente desde su portal.
+  await requerirAccesoCliente(clienteId);
+  if (planId != null && !db().prepare("SELECT 1 FROM planes_nutricion WHERE id = ? AND cliente_id = ?").get(planId, clienteId)) {
+    return { error: "El plan no pertenece a este cliente." };
+  }
   const adherencia = numero(fd, "adherencia");
   if (adherencia == null || adherencia < 0 || adherencia > 100) return { error: "La adherencia debe ser un porcentaje entre 0 y 100." };
   const escala = (clave: string) => {
@@ -91,11 +99,12 @@ export async function registrarSeguimiento(clienteId: number, planId: number | n
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(clienteId, planId, fecha(fd, "fecha"), Math.round(adherencia), numero(fd, "agua_litros"), escala("energia"), escala("hambre"), texto(fd, "notas") || null);
-  revalidatePath(`/clientes/${clienteId}`, "layout");
+  revalidatePath("/", "layout");
   return { ok: true };
 }
 
 export async function eliminarSeguimiento(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM seguimiento_nutricion WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath(`/clientes/${clienteId}`, "layout");
 }

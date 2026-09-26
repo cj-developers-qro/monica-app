@@ -176,12 +176,12 @@ export function EditorRutina({
             const delDia = filas.filter((f) => f.dia === dia);
             return (
               <div key={dia} className="tarjeta overflow-hidden">
-                <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2">
+                <div className="flex items-center gap-2 border-b border-pink-100 bg-pink-50/60 px-4 py-2">
                   <input
                     aria-label="Nombre del día"
                     defaultValue={dia}
                     onBlur={(e) => (e.target.value.trim() && e.target.value !== dia ? renombrarDia(dia, e.target.value.trim()) : (e.target.value = dia))}
-                    className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-slate-800 hover:border-slate-300 focus:border-emerald-500 focus:bg-white focus:outline-none"
+                    className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-slate-800 hover:border-slate-300 focus:border-pink-500 focus:bg-white focus:outline-none"
                   />
                   <button type="button" onClick={() => quitarDia(dia)} className="text-xs text-slate-400 hover:text-red-600">
                     Quitar día

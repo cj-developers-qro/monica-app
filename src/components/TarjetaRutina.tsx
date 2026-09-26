@@ -8,11 +8,11 @@ export function TarjetaRutina({ rutina, children }: { rutina: RutinaConEjercicio
   const dias = agruparPorDia(rutina.items);
   return (
     <article className="tarjeta flex flex-col overflow-hidden">
-      <Link href={`/rutinas/${rutina.id}`} className="block border-b border-slate-100 p-3 transition hover:bg-slate-50">
+      <Link href={`/rutinas/${rutina.id}`} className="block border-b border-slate-100 p-3 transition hover:bg-pink-50">
         <ImagenRutina rutina={rutina} />
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <Link href={`/rutinas/${rutina.id}`} className="font-semibold text-slate-900 hover:text-emerald-700">
+        <Link href={`/rutinas/${rutina.id}`} className="font-semibold text-slate-900 hover:text-pink-700">
           {rutina.nombre}
         </Link>
         <div className="flex flex-wrap gap-1.5">

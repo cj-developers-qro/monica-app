@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/*
+ * Estilo único de la aplicación (rosa y blanco). Todas las pantallas —administración,
+ * portal de clientes, acceso y exportación— usan estas mismas clases de componente,
+ * así que un cambio aquí se refleja en toda la app.
+ */
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -10,30 +16,97 @@
 }
 
 body {
-  background: #f8fafc;
+  background: #fff7fa;
   color: #0f172a;
 }
 
+/* --- Marco --------------------------------------------------------------- */
+
+.barra-marca {
+  @apply bg-gradient-to-b from-pink-600 to-rose-600 text-white;
+}
+
+.logo-marca {
+  @apply inline-flex size-10 shrink-0 items-center justify-center rounded-2xl bg-white/95 text-pink-600 shadow-sm;
+}
+
+.fondo-acceso {
+  @apply min-h-screen bg-gradient-to-br from-pink-100 via-white to-rose-100;
+}
+
+/* --- Contenedores ------------------------------------------------------------ */
+
+.tarjeta {
+  @apply rounded-2xl border border-pink-100 bg-white shadow-sm shadow-pink-100/60;
+}
+
+.aviso-marca {
+  @apply rounded-xl border border-pink-200 bg-pink-50 px-4 py-3 text-sm text-pink-900;
+}
+
+/* --- Formularios ------------------------------------------------------------- */
+
 .campo {
-  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20;
+  @apply w-full rounded-xl border border-pink-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20;
 }
 
 .etiqueta {
   @apply mb-1 block text-xs font-medium text-slate-600;
 }
 
-.tarjeta {
-  @apply rounded-xl border border-slate-200 bg-white shadow-sm;
-}
+/* --- Botones y enlaces --------------------------------------------------------- */
 
 .boton {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-pink-200 transition hover:bg-pink-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600 disabled:opacity-60;
 }
 
 .boton-secundario {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-pink-200 bg-white px-4 py-2 text-sm font-medium text-pink-700 shadow-sm transition hover:bg-pink-50 disabled:opacity-60;
 }
 
 .boton-peligro {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50;
+}
+
+.enlace {
+  @apply font-medium text-pink-700 hover:text-pink-800 hover:underline;
+}
+
+.enlace-volver {
+  @apply text-sm text-slate-500 hover:text-pink-700;
+}
+
+/* Filtros tipo píldora (objetivo, músculo, semana del plan) */
+.chip {
+  @apply rounded-full border border-pink-200 bg-white px-3 py-1 text-sm text-slate-600 transition hover:bg-pink-50 aria-[current=page]:border-pink-600 aria-[current=page]:bg-pink-600 aria-[current=page]:text-white;
+}
+
+/* Pestañas del expediente y del portal */
+.pestana {
+  @apply whitespace-nowrap border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-pink-700 aria-[current=page]:border-pink-600 aria-[current=page]:text-pink-700;
+}
+
+/* Enlaces del menú sobre la barra rosa */
+.menu-enlace {
+  @apply rounded-xl px-3 py-2 text-sm font-medium text-pink-50 transition hover:bg-white/15 hover:text-white aria-[current=page]:bg-white aria-[current=page]:text-pink-700 aria-[current=page]:shadow-sm;
+}
+
+.insignia-marca {
+  @apply rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-800;
+}
+
+/* --- Impresión / exportación a PDF ---------------------------------------------- */
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+  .tarjeta {
+    box-shadow: none;
+  }
 }

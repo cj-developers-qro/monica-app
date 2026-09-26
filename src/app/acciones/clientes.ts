@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requerirAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CLAVES_ONBOARDING } from "@/lib/cuestionario";
 import { esObjetivo } from "@/lib/objetivos";
@@ -34,6 +35,7 @@ function leerCliente(fd: FormData) {
 }
 
 export async function crearCliente(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const r = leerCliente(fd);
   if ("error" in r) return { error: r.error };
   const { nombre, sexo, objetivo, edad, estatura_cm, onboarding } = r.datos;
@@ -54,6 +56,7 @@ export async function crearCliente(_: EstadoFormulario, fd: FormData): Promise<E
 }
 
 export async function actualizarCliente(id: number, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const r = leerCliente(fd);
   if ("error" in r) return { error: r.error };
   const { nombre, sexo, objetivo, edad, estatura_cm, onboarding } = r.datos;
@@ -64,6 +67,7 @@ export async function actualizarCliente(id: number, _: EstadoFormulario, fd: For
 }
 
 export async function eliminarCliente(id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM clientes WHERE id = ?").run(id);
   revalidatePath("/", "layout");
   redirect("/");
@@ -76,6 +80,7 @@ const CAMPOS_MEDICION = [
 ] as const;
 
 export async function registrarMedicion(clienteId: number, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const valores = CAMPOS_MEDICION.map((c) => numero(fd, c));
   if (valores.every((v) => v == null)) return { error: "Captura al menos una medida." };
   if (valores.some((v) => v != null && (v <= 0 || v > 250))) return { error: "Las medidas deben estar en centímetros (0–250)." };
@@ -88,6 +93,7 @@ export async function registrarMedicion(clienteId: number, _: EstadoFormulario, 
 }
 
 export async function eliminarMedicion(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM mediciones WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath(`/clientes/${clienteId}`, "layout");
 }
@@ -95,6 +101,7 @@ export async function eliminarMedicion(clienteId: number, id: number) {
 // --- Composición corporal ------------------------------------------------------
 
 export async function registrarComposicion(clienteId: number, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const peso = numero(fd, "peso_kg");
   const grasa = numero(fd, "grasa_pct");
   const musculo = numero(fd, "musculo_pct");
@@ -114,6 +121,7 @@ export async function registrarComposicion(clienteId: number, _: EstadoFormulari
 }
 
 export async function eliminarComposicion(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM composicion WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath("/", "layout");
 }
@@ -127,6 +135,7 @@ function activarRutina(clienteId: number, rutinaId: number, inicio: string, nota
 }
 
 export async function asignarRutina(clienteId: number, fd: FormData) {
+  await requerirAdmin();
   const rutinaId = entero(fd, "rutina_id", 0);
   const existe = db().prepare("SELECT 1 FROM rutinas WHERE id = ?").get(rutinaId);
   if (!existe) throw new Error("La rutina no existe.");
@@ -136,6 +145,7 @@ export async function asignarRutina(clienteId: number, fd: FormData) {
 
 /** Copia una rutina del catálogo como rutina propia del cliente, la activa y abre el editor. */
 export async function personalizarRutina(clienteId: number, rutinaId: number) {
+  await requerirAdmin();
   const cliente = db().prepare("SELECT nombre FROM clientes WHERE id = ?").get(clienteId) as { nombre: string } | undefined;
   const base = db().prepare("SELECT * FROM rutinas WHERE id = ?").get(rutinaId) as Record<string, string | number> | undefined;
   if (!cliente || !base) throw new Error("Cliente o rutina inexistente.");
@@ -150,11 +160,13 @@ export async function personalizarRutina(clienteId: number, rutinaId: number) {
 }
 
 export async function finalizarAsignacion(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("UPDATE asignaciones SET activa = 0, fecha_fin = date('now', 'localtime') WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath("/", "layout");
 }
 
 export async function eliminarAsignacion(clienteId: number, id: number) {
+  await requerirAdmin();
   db().prepare("DELETE FROM asignaciones WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath("/", "layout");
 }

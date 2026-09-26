@@ -5,6 +5,7 @@ import { unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requerirAdmin } from "@/lib/auth";
 import { db, DIRECTORIO_IMAGENES } from "@/lib/db";
 import { copiarRutina, enTransaccion } from "@/lib/escritura";
 import { esNivel, esObjetivo } from "@/lib/objetivos";
@@ -60,6 +61,7 @@ async function borrarImagen(nombre: string | null) {
 }
 
 export async function guardarRutina(id: number | null, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  await requerirAdmin();
   const nombre = texto(fd, "nombre");
   const objetivo = texto(fd, "objetivo");
   const nivel = texto(fd, "nivel");
@@ -116,6 +118,7 @@ export async function guardarRutina(id: number | null, _: EstadoFormulario, fd: 
 }
 
 export async function duplicarRutina(rutinaId: number) {
+  await requerirAdmin();
   const base = db().prepare("SELECT nombre FROM rutinas WHERE id = ?").get(rutinaId) as { nombre: string } | undefined;
   if (!base) throw new Error("La rutina no existe.");
   const id = enTransaccion(() => copiarRutina(rutinaId, `Copia de ${base.nombre}`, null));
@@ -124,6 +127,7 @@ export async function duplicarRutina(rutinaId: number) {
 }
 
 export async function eliminarRutina(rutinaId: number) {
+  await requerirAdmin();
   const r = db().prepare("SELECT imagen, cliente_id FROM rutinas WHERE id = ?").get(rutinaId) as
     | { imagen: string | null; cliente_id: number | null }
     | undefined;

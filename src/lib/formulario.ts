@@ -1,6 +1,7 @@
 // Utilidades para leer FormData en las acciones del servidor.
 
-export type EstadoFormulario = { error?: string; ok?: boolean } | undefined;
+/** Resultado de una acción de formulario: error a mostrar, o éxito con un mensaje opcional. */
+export type EstadoFormulario = { error?: string; ok?: boolean; mensaje?: string; secreto?: string } | undefined;
 
 export function texto(fd: FormData, clave: string): string {
   const v = fd.get(clave);
