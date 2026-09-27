@@ -1,4 +1,4 @@
--- Esquema de la base de datos. Lo usan la app (src/lib/db.ts) y el comando `npm run admin`.
+-- Esquema de la base de datos (lo aplica src/lib/db.ts al abrir la base, también desde los scripts).
 -- Todas las sentencias son idempotentes: se ejecutan cada vez que se abre la base.
 
 CREATE TABLE IF NOT EXISTS clientes (

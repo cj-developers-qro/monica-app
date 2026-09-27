@@ -29,6 +29,7 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
 6. [Preguntas frecuentes](#6-preguntas-frecuentes)
 7. [Privacidad y seguridad](#7-privacidad-y-seguridad)
 8. [Información técnica (instalación y mantenimiento)](#8-información-técnica-instalación-y-mantenimiento)
+9. [Publicar en la nube (Oracle Cloud gratis + moni-fit.com)](#9-publicar-en-la-nube-oracle-cloud-gratis--moni-fitcom)
 
 ---
 
@@ -388,7 +389,11 @@ Todo está en **Editar perfil y acceso**:
 *(Puedes copiar esta sección y enviársela a tus clientes).*
 
 1. **Entrar:** abre la dirección de la app, escribe tu correo y la contraseña temporal que te dio Moni.
-   La primera vez te pedirá crear tu propia contraseña.
+   La primera vez te pedirá crear tu propia contraseña y leer y aceptar el **aviso de privacidad**, que explica
+   cómo se cuidan tus datos de salud.
+
+<p align="center"><img src="docs/capturas/29-aviso-privacidad.png" alt="Aceptación del aviso de privacidad" width="720"></p>
+
 2. **Mi resumen:** tu peso, % de grasa y % de músculo más recientes, cómo va tu progreso, las fechas de tu plan
    de nutrición y **tu rutina** con la imagen de los músculos que trabajas y los ejercicios de cada día.
 
@@ -456,6 +461,10 @@ variante, usa **Duplicar**.
 
 ## 7. Privacidad y seguridad
 
+- **Aviso de privacidad:** es público en `/privacidad` (enlace al pie del inicio de sesión). Cada cliente debe
+  aceptarlo, con su consentimiento expreso para el tratamiento de datos de salud, antes de ver su información.
+  En *Acceso a la aplicación* ves si cada cliente ya lo aceptó y cuándo. Los datos de la responsable se
+  completan en `src/lib/privacidad.ts`; mientras falten, al entrar como administradora verás una advertencia en el aviso.
 - Las contraseñas se guardan **cifradas** (scrypt); nadie puede leerlas, ni siquiera en la base de datos.
 - Cada cliente solo puede ver y exportar **su propio** expediente. La app lo verifica en cada pantalla, en cada
   consulta y en cada acción, no solo en los menús.
@@ -527,13 +536,13 @@ cloudflared tunnel --no-autoupdate --url http://localhost:3000   # terminal 2
 `cloudflared` muestra una dirección `https://<palabras>.trycloudflare.com`. Funciona mientras las dos
 terminales y la computadora estén encendidas, y **cambia cada vez que se reinicia el túnel**.
 
-**Para uso diario:** usar un túnel con nombre de Cloudflare en un dominio propio (dirección fija), o una VPS con un
-proxy inverso como Caddy o Nginx. El proxy debe enviar el encabezado `X-Forwarded-Proto: https`: así la cookie
-de sesión se marca como segura. Conserva la carpeta `data/` en un disco persistente.
+**Para uso diario:** publícala en la nube con dirección fija; la guía completa está en la
+[sección 9](#9-publicar-en-la-nube-oracle-cloud-gratis--moni-fitcom).
 
 ### Estructura
 ```
-scripts/admin.mjs            crea o restablece la cuenta de administradora
+deploy/                      instalación y operación en el servidor (ver sección 9)
+scripts/admin.mts            crea o restablece la cuenta de administradora
 scripts/datos-demo.mts       clientes de demostración (npm run demo)
 scripts/cargador.mjs         permite a Node ejecutar los módulos TypeScript de src/ desde los scripts
 src/proxy.ts                 sin sesión → /login (filtro inicial)
@@ -545,6 +554,9 @@ src/app/acciones/            acciones del servidor (cada una verifica el rol)
 src/components/              componentes compartidos (logotipo, vistas de plan, recomposición, formularios…)
 src/lib/auth.ts              sesiones y verificación de roles
 src/lib/contrasenas.ts       cifrado (scrypt) y contraseñas temporales
+src/lib/privacidad.ts        datos del aviso de privacidad (completar antes de publicar)
+src/app/(legal)/privacidad/  aviso de privacidad y consentimiento de los clientes
+src/app/salud/               chequeo de salud para el monitoreo
 src/lib/datos.ts             consultas; cada una verifica quién la pide
 src/lib/nutricion.ts         motor del plan de nutrición
 src/lib/recomposicion.ts     motor del diagnóstico de recomposición
@@ -552,3 +564,155 @@ src/lib/musculos.ts          catálogo de músculos y diagrama SVG
 src/lib/catalogo-semilla.ts  45 ejercicios y 8 rutinas iniciales
 src/lib/alimentos.ts         base de 56 alimentos con macronutrientes
 ```
+
+---
+
+## 9. Publicar en la nube (Oracle Cloud gratis + moni-fit.com)
+
+*Guía para quien instala la app. Resultado: MoniFit en **https://moni-fit.com**, con HTTPS, respaldos diarios
+y monitoreo, por **$0 al mes** (solo se paga la renovación del dominio).*
+
+```
+Clientes y Moni ──HTTPS──▶ Cloudflare (DNS, certificado y protección · gratis)
+                                │ túnel cifrado (el servidor no abre ningún puerto)
+                                ▼
+                  Oracle Cloud Always Free · Ubuntu 24.04 · ARM Ampere
+                  ├─ MoniFit (servicio "monifit", solo escucha en 127.0.0.1:3000)
+                  ├─ /var/lib/monifit     ← base de datos e imágenes
+                  └─ /var/backups/monifit ← respaldo diario ──▶ Cloudflare R2 (gratis hasta 10 GB)
+```
+
+| Pieza | Para qué | Costo |
+|---|---|---|
+| Oracle Cloud Always Free (Ampere A1) | Servidor donde corre la app | $0 |
+| Cloudflare (plan Free) | DNS de moni-fit.com, HTTPS, túnel y protección | $0 |
+| Cloudflare R2 | Copia de los respaldos fuera del servidor | $0 (hasta 10 GB) |
+| UptimeRobot (plan Free) | Aviso por correo si la app se cae | $0 |
+| Dominio moni-fit.com (GoDaddy) | Dirección de la app | Renovación anual |
+
+> Los precios y límites de los planes gratuitos pueden cambiar; revísalos al contratar.
+
+### 9.0 Antes de empezar
+- [ ] Completa los datos de la responsable en **`src/lib/privacidad.ts`** (nombre completo, domicilio y correo
+      de contacto) y pide que una persona asesora en protección de datos revise el aviso. Sube el cambio a GitHub.
+- [ ] Decide si conservas los clientes de demostración o los quitas (`npm run demo -- --borrar`).
+- [ ] Ten a la mano: cuenta de GitHub con acceso al repositorio, cuenta de GoDaddy y una tarjeta para verificar
+      la cuenta de Oracle (no se cobra mientras uses solo recursos Always Free).
+
+### 9.1 Crear el servidor en Oracle Cloud
+1. Crea tu cuenta en **cloud.oracle.com** → *Sign up*. Elige la **región de origen** con cuidado, porque
+   no se puede cambiar después; la más cercana es *Mexico Central (Querétaro)*.
+2. **Recomendado:** en *Billing → Upgrade and manage payment*, cambia la cuenta a **Pay As You Go**. Mientras
+   uses solo recursos *Always Free* sigue siendo gratis, pero así Oracle **no reclama el servidor por estar
+   inactivo** (algo que sí puede pasar en cuentas gratuitas) y hay más disponibilidad. Después, en
+   *Billing → Budgets*, crea un presupuesto de $1 USD con alerta por correo para enterarte de cualquier cargo.
+3. Ve a *Compute → Instances → Create instance*:
+   - **Name:** `monifit`
+   - **Image:** *Canonical Ubuntu 24.04*
+   - **Shape:** *Ampere → VM.Standard.A1.Flex*, **1 OCPU y 6 GB de memoria** (dentro del límite gratuito).
+   - **Networking:** la red que propone por defecto, con **IP pública** asignada.
+   - **SSH keys:** *Generate a key pair for me* → **descarga la llave privada** y guárdala en un lugar seguro.
+   - **Boot volume:** 50 GB.
+4. Presiona **Create**. Si aparece *Out of capacity*, intenta con otro *Availability domain* o más tarde.
+5. Anota la **IP pública** de la instancia.
+
+> No hace falta abrir puertos: el túnel de Cloudflare sale del servidor hacia afuera. Deja solo el puerto 22 (SSH),
+> que viene abierto por defecto.
+
+### 9.2 Conectarte al servidor
+En tu Mac (reemplaza la ruta de la llave y la IP):
+```bash
+chmod 600 ~/Downloads/ssh-key-monifit.key
+ssh -i ~/Downloads/ssh-key-monifit.key ubuntu@<IP-del-servidor>
+```
+
+### 9.3 Instalar MoniFit
+1. Desde tu Mac, en la carpeta de la app, copia el instalador al servidor:
+   ```bash
+   scp -i ~/Downloads/ssh-key-monifit.key deploy/instalar-servidor.sh ubuntu@<IP>:~
+   ```
+2. En el servidor:
+   ```bash
+   sudo bash instalar-servidor.sh
+   ```
+3. La primera vez se detiene y muestra una **clave pública** (empieza con `ssh-ed25519`): el servidor necesita
+   permiso para leer el repositorio privado. Cópiala y agrégala en GitHub:
+   *monica-app → Settings → Deploy keys → Add deploy key*, con el título `servidor Oracle` y **sin** marcar
+   *Allow write access*.
+4. Vuelve a ejecutar `sudo bash instalar-servidor.sh`. Instala Node.js 24, descarga y compila la app y
+   deja activos el servicio `monifit` y el respaldo diario. Al final debe decir
+   **"✓ MoniFit responde en el servidor"**.
+
+### 9.4 Pasar el dominio a Cloudflare y crear el túnel
+1. Crea una cuenta en **dash.cloudflare.com** → *Add a domain* → `moni-fit.com` → plan **Free**.
+2. Cloudflare importa los registros DNS actuales. **Si usas correo con @moni-fit.com**, verifica que aparezcan
+   todos los registros **MX**, **TXT** (SPF, DMARC) y **CNAME** del correo antes de continuar; si falta alguno,
+   el correo dejaría de funcionar.
+3. Cloudflare te dará **dos nameservers** (por ejemplo `ana.ns.cloudflare.com`). En **GoDaddy**:
+   *Mis productos → moni-fit.com → DNS → Nameservers → Cambiar → Usaré mis propios servidores de nombres*,
+   y escribe los dos de Cloudflare. El dominio sigue siendo tuyo en GoDaddy; solo cambia quién responde el DNS.
+   La activación tarda de minutos a 24 horas: Cloudflare te avisa por correo.
+4. En Cloudflare: *Zero Trust → Networks → Tunnels → Create a tunnel → Cloudflared*, con el nombre `monifit`.
+   En el comando de instalación que muestra, copia **solo el token** (el texto largo después de `install`).
+5. En el servidor:
+   ```bash
+   sudo CLOUDFLARE_TUNNEL_TOKEN=<token> bash instalar-servidor.sh
+   ```
+6. De vuelta en el túnel, en *Public hostnames → Add a public hostname*, agrega:
+   - `moni-fit.com` → Service **HTTP** → `localhost:3000`
+   - `www.moni-fit.com` → Service **HTTP** → `localhost:3000`
+7. En *SSL/TLS → Edge Certificates*, activa **Always Use HTTPS**.
+8. Abre **https://moni-fit.com**: debe aparecer el inicio de sesión de MoniFit.
+
+### 9.5 Llevar los datos
+**Opción A — migrar lo que ya existe en tu Mac** (cuenta de Moni, clientes, planes, imágenes):
+```bash
+LLAVE_SSH=~/Downloads/ssh-key-monifit.key ./deploy/migrar-datos.sh ubuntu@<IP>
+```
+Hace una copia consistente de `data/`, la envía y la restaura en el servidor. Si el servidor ya tenía datos,
+antes guarda una copia de ellos.
+
+**Opción B — empezar con la base vacía** y solo la cuenta de Moni:
+```bash
+sudo -u monifit bash -c 'set -a; . /etc/monifit/monifit.env; cd /opt/monifit && npm run admin -- monica@moni-fit.com Moni'
+```
+Anota la contraseña temporal que muestra y entrégasela a Moni.
+
+### 9.6 Respaldos fuera del servidor (Cloudflare R2)
+El servidor ya guarda un respaldo diario a las 3:30 (conserva los últimos 14), pero conviene tener una copia
+**fuera** de él:
+1. En Cloudflare: *R2 → Create bucket* → nombre `monifit-respaldos`.
+2. *R2 → Manage API tokens → Create API token* → permiso **Object Read & Write** solo para ese bucket.
+   Copia el *Access Key ID*, el *Secret Access Key* y el *endpoint* (`https://<ID>.r2.cloudflarestorage.com`).
+3. En el servidor, edita `sudo nano /etc/monifit/respaldo.env`, descomenta las 6 líneas y llénalas.
+4. Pruébalo:
+   ```bash
+   sudo systemctl start monifit-respaldo && journalctl -u monifit-respaldo -n 20
+   ```
+   Debe aparecer *"Copia remota: r2:monifit-respaldos/…"*.
+5. Opcional: en el bucket, *Settings → Object lifecycle rules*, borra los respaldos con más de 30 días.
+
+### 9.7 Monitoreo
+En **uptimerobot.com** (plan gratuito) crea un monitor *HTTP(s)* hacia **https://moni-fit.com/salud** cada
+5 minutos, con alerta a tu correo. Esa dirección responde `{"ok":true}` cuando la app y la base de datos funcionan.
+
+### 9.8 Operación del día a día
+| Quiero… | Comando en el servidor |
+|---|---|
+| Publicar una versión nueva (después de subirla a GitHub) | `sudo /opt/monifit/deploy/actualizar.sh` (respalda, compila y reinicia) |
+| Ver si la app está funcionando | `systemctl status monifit cloudflared` |
+| Ver los registros de la app | `journalctl -u monifit -f` |
+| Hacer un respaldo ahora | `sudo systemctl start monifit-respaldo` |
+| Restaurar un respaldo | `sudo /opt/monifit/deploy/restaurar.sh /var/backups/monifit/<archivo>.tar.gz` |
+| Traer un respaldo de R2 | `sudo -u monifit bash -c 'set -a; . /etc/monifit/respaldo.env; rclone copy r2:monifit-respaldos/<archivo> /tmp/'` |
+| Nueva contraseña temporal para Moni | `sudo -u monifit bash -c 'set -a; . /etc/monifit/monifit.env; cd /opt/monifit && npm run admin -- monica@moni-fit.com Moni'` |
+
+Si el servidor se reinicia, la app, el túnel y el respaldo diario vuelven a arrancar solos. Las
+actualizaciones de seguridad de Ubuntu se instalan automáticamente.
+
+### 9.9 Seguridad del servidor
+- La app solo escucha en `127.0.0.1`: desde internet solo se llega a ella por el túnel de Cloudflare, con HTTPS.
+- No hay puertos abiertos aparte de SSH, y SSH solo acepta la llave que descargaste. Guárdala bien.
+- El servicio corre con un usuario sin privilegios (`monifit`) que solo puede escribir en su carpeta de datos.
+- Los datos (`/var/lib/monifit`) y los respaldos solo los puede leer ese usuario.
+- El servidor accede al repositorio con una *deploy key* de **solo lectura**.

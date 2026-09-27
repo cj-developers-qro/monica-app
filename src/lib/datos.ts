@@ -338,9 +338,17 @@ export async function obtenerAcceso(clienteId: number) {
   await requerirAdmin();
   return (
     (db()
-      .prepare("SELECT id, usuario, activo, debe_cambiar, ultimo_acceso, bloqueado_hasta FROM usuarios WHERE cliente_id = ?")
+      .prepare("SELECT id, usuario, activo, debe_cambiar, ultimo_acceso, bloqueado_hasta, acepto_privacidad FROM usuarios WHERE cliente_id = ?")
       .get(clienteId) as
-      | { id: number; usuario: string; activo: number; debe_cambiar: number; ultimo_acceso: string | null; bloqueado_hasta: string | null }
+      | {
+          id: number;
+          usuario: string;
+          activo: number;
+          debe_cambiar: number;
+          ultimo_acceso: string | null;
+          bloqueado_hasta: string | null;
+          acepto_privacidad: string | null;
+        }
       | undefined) ?? null
   );
 }

@@ -19,6 +19,7 @@ export type Usuario = {
   rol: "admin" | "cliente";
   cliente_id: number | null;
   debe_cambiar: number;
+  acepto_privacidad: string | null;
 };
 
 // --- Contraseñas ---------------------------------------------------------------
@@ -68,7 +69,7 @@ export const usuarioActual = cache(async (): Promise<Usuario | null> => {
   if (!token) return null;
   const fila = db()
     .prepare(
-      `SELECT u.id, u.usuario, u.nombre, u.rol, u.cliente_id, u.debe_cambiar
+      `SELECT u.id, u.usuario, u.nombre, u.rol, u.cliente_id, u.debe_cambiar, u.acepto_privacidad
        FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id
        WHERE s.token_hash = ? AND s.expira > datetime('now') AND u.activo = 1`,
     )
@@ -97,16 +98,21 @@ export async function requerirAdmin(): Promise<Usuario> {
   return u;
 }
 
-/** Solo un cliente con expediente; devuelve su cliente_id. */
+/** Solo un cliente con expediente; devuelve su cliente_id. Antes debe aceptar el aviso de privacidad. */
 export async function requerirCliente(): Promise<Usuario & { cliente_id: number }> {
   const u = await requerirSesion();
   if (u.rol !== "cliente" || u.cliente_id == null) redirect("/");
+  if (!u.acepto_privacidad) redirect("/privacidad?aceptar=1");
   return u as Usuario & { cliente_id: number };
 }
 
 /** La administradora ve cualquier expediente; un cliente, únicamente el suyo. */
 export async function requerirAccesoCliente(clienteId: number): Promise<Usuario> {
   const u = await requerirSesion();
-  if (u.rol === "admin" || u.cliente_id === clienteId) return u;
+  if (u.rol === "admin") return u;
+  if (u.cliente_id === clienteId) {
+    if (!u.acepto_privacidad) redirect("/privacidad?aceptar=1");
+    return u;
+  }
   redirect("/portal");
 }

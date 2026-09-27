@@ -1,0 +1,10 @@
+# Respaldo diario a las 3:30 (hora del servidor). Si el servidor estaba apagado, se ejecuta al encender.
+[Unit]
+Description=Respaldo diario de MoniFit
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

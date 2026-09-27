@@ -5,7 +5,7 @@ import { useFormStatus } from "react-dom";
 import { cambiarCorreoAcceso, cambiarEstadoAcceso, crearAcceso, restablecerAcceso } from "@/app/acciones/accesos";
 import type { EstadoFormulario } from "@/lib/formulario";
 
-type Acceso = { usuario: string; activo: number; debe_cambiar: number; ultimo_acceso: string | null } | null;
+type Acceso = { usuario: string; activo: number; debe_cambiar: number; ultimo_acceso: string | null; acepto_privacidad: string | null } | null;
 
 const fechaHora = (f: string) => new Date(f.replace(" ", "T") + "Z").toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" });
 
@@ -55,7 +55,7 @@ export function PanelAcceso({ clienteId, nombre, acceso }: { clienteId: number; 
         </>
       ) : (
         <div className="mt-3 space-y-5">
-          <dl className="grid gap-3 text-sm sm:grid-cols-3">
+          <dl className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <dt className="text-xs text-slate-500">Correo de acceso</dt>
               <dd className="break-all font-medium text-slate-800">{acceso.usuario}</dd>
@@ -73,6 +73,12 @@ export function PanelAcceso({ clienteId, nombre, acceso }: { clienteId: number; 
             <div>
               <dt className="text-xs text-slate-500">Último ingreso</dt>
               <dd className="text-slate-800">{acceso.ultimo_acceso ? fechaHora(acceso.ultimo_acceso) : "Nunca"}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-slate-500">Aviso de privacidad</dt>
+              <dd className="text-slate-800">
+                {acceso.acepto_privacidad ? `✓ Aceptado el ${fechaHora(acceso.acepto_privacidad)}` : "Pendiente (se le pide al entrar)"}
+              </dd>
             </div>
           </dl>
 

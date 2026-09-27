@@ -87,3 +87,12 @@ export async function cambiarContrasena(_estado: EstadoFormulario, fd: FormData)
   if (u.debe_cambiar) redirect(u.rol === "admin" ? "/" : "/portal");
   return { ok: true, mensaje: "Tu contraseña se actualizó." };
 }
+
+/** Consentimiento expreso del cliente al aviso de privacidad (datos de salud). */
+export async function aceptarPrivacidad(_estado: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const u = await usuarioActual();
+  if (!u) redirect("/login");
+  if (texto(fd, "acepto") !== "si") return { error: "Para continuar marca la casilla de aceptación." };
+  db().prepare("UPDATE usuarios SET acepto_privacidad = datetime('now') WHERE id = ? AND acepto_privacidad IS NULL").run(u.id);
+  redirect(u.rol === "admin" ? "/" : "/portal");
+}

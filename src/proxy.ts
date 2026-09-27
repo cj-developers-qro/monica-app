@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Primer filtro (optimista): sin cookie de sesión, cualquier página lleva al login.
 // La verificación real de la sesión y del rol ocurre en lib/auth.ts, en cada consulta y acción.
-const PUBLICAS = ["/login"];
+const PUBLICAS = ["/login", "/privacidad", "/salud"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

@@ -8,7 +8,15 @@ export async function SeccionAcceso({ clienteId, nombre }: { clienteId: number; 
     <PanelAcceso
       clienteId={clienteId}
       nombre={nombre}
-      acceso={acceso && { usuario: acceso.usuario, activo: acceso.activo, debe_cambiar: acceso.debe_cambiar, ultimo_acceso: acceso.ultimo_acceso }}
+      acceso={
+        acceso && {
+          usuario: acceso.usuario,
+          activo: acceso.activo,
+          debe_cambiar: acceso.debe_cambiar,
+          ultimo_acceso: acceso.ultimo_acceso,
+          acepto_privacidad: acceso.acepto_privacidad,
+        }
+      }
     />
   );
 }

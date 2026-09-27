@@ -1,0 +1,11 @@
+# Respaldo de la base de datos y las imágenes (lo dispara monifit-respaldo.timer).
+[Unit]
+Description=Respaldo de MoniFit
+
+[Service]
+Type=oneshot
+User=monifit
+Group=monifit
+EnvironmentFile=/etc/monifit/monifit.env
+EnvironmentFile=-/etc/monifit/respaldo.env
+ExecStart=/opt/monifit/deploy/respaldar.sh

@@ -8,7 +8,7 @@ import { EJERCICIOS_SEMILLA, RUTINAS_SEMILLA } from "./catalogo-semilla";
 export const DIRECTORIO_DATOS = process.env.DATA_DIR ?? path.join(process.cwd(), "data");
 export const DIRECTORIO_IMAGENES = path.join(/*turbopackIgnore: true*/ DIRECTORIO_DATOS, "imagenes");
 
-// El esquema vive en un archivo .sql para compartirlo con el comando `npm run admin`.
+// El esquema vive en un archivo .sql; los cambios a bases existentes van en MIGRACIONES (abajo).
 const ESQUEMA = readFileSync(path.join(process.cwd(), "src", "lib", "esquema.sql"), "utf8");
 
 function sembrarCatalogo(db: DatabaseSync) {
@@ -55,11 +55,28 @@ function sembrarCatalogo(db: DatabaseSync) {
   }
 }
 
+/**
+ * Cambios de esquema para bases que ya existen (esquema.sql solo crea lo que falta).
+ * Cada migración agrega una columna si todavía no está; se pueden añadir más al final.
+ */
+const MIGRACIONES: { tabla: string; columna: string; definicion: string }[] = [
+  // Fecha y hora en que el cliente aceptó el aviso de privacidad (NULL = pendiente).
+  { tabla: "usuarios", columna: "acepto_privacidad", definicion: "TEXT" },
+];
+
+function migrar(db: DatabaseSync) {
+  for (const { tabla, columna, definicion } of MIGRACIONES) {
+    const columnas = db.prepare(`PRAGMA table_info(${tabla})`).all().map((c) => c.name);
+    if (!columnas.includes(columna)) db.exec(`ALTER TABLE ${tabla} ADD COLUMN ${columna} ${definicion}`);
+  }
+}
+
 function abrir() {
   mkdirSync(DIRECTORIO_IMAGENES, { recursive: true });
   const db = new DatabaseSync(path.join(/*turbopackIgnore: true*/ DIRECTORIO_DATOS, "app-deportiva.db"), { timeout: 5000 });
   db.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
   db.exec(ESQUEMA);
+  migrar(db);
   sembrarCatalogo(db);
   return db;
 }

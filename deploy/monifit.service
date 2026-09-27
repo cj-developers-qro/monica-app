@@ -1,0 +1,25 @@
+# Servicio de MoniFit: arranca con el servidor y se reinicia solo si falla.
+# Escucha solo en 127.0.0.1; el acceso público llega por el túnel de Cloudflare.
+[Unit]
+Description=MoniFit (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=monifit
+Group=monifit
+WorkingDirectory=/opt/monifit
+EnvironmentFile=/etc/monifit/monifit.env
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3000
+Restart=always
+RestartSec=5
+# Endurecimiento básico: la app solo puede escribir en su carpeta de datos.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/monifit -/opt/monifit/.next/cache
+
+[Install]
+WantedBy=multi-user.target

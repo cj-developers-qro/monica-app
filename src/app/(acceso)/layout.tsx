@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconoMoniFit, LEMA_APP, NombreMoniFit } from "@/components/Logo";
 
 // Marco de las pantallas de acceso: fondo degradado rosa y tarjeta blanca centrada.
@@ -12,7 +13,12 @@ export default function LayoutAcceso({ children }: LayoutProps<"/">) {
         <p className="mt-1 text-sm text-pink-700">{LEMA_APP}</p>
       </div>
       <div className="tarjeta w-full max-w-md p-6 sm:p-8">{children}</div>
-      <p className="mt-6 text-xs text-slate-400">Tus datos de salud son privados: solo tú y Moni pueden verlos.</p>
+      <p className="mt-6 text-center text-xs text-slate-400">
+        Tus datos de salud son privados: solo tú y Moni pueden verlos ·{" "}
+        <Link href="/privacidad" className="underline hover:text-pink-700">
+          Aviso de privacidad
+        </Link>
+      </p>
     </div>
   );
 }
