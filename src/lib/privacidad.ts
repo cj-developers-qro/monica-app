@@ -3,7 +3,7 @@
 
 export const AVISO = {
   /** Nombre completo de la persona responsable del tratamiento de los datos. */
-  responsable: "[Nombre completo de Moni]",
+  responsable: "Monica Beatriz Amador Gomez",
   /** Domicilio para oír y recibir notificaciones. */
   domicilio: "[Domicilio completo]",
   /** Correo donde los clientes ejercen sus derechos ARCO o revocan su consentimiento. */
