@@ -593,8 +593,9 @@ Clientes y Moni ──HTTPS──▶ Cloudflare (DNS, certificado y protección 
 > Los precios y límites de los planes gratuitos pueden cambiar; revísalos al contratar.
 
 ### 9.0 Antes de empezar
-- [ ] Completa los datos de la responsable en **`src/lib/privacidad.ts`** (nombre completo, domicilio y correo
-      de contacto) y pide que una persona asesora en protección de datos revise el aviso. Sube el cambio a GitHub.
+- [x] Datos de la responsable en el aviso de privacidad (`src/lib/privacidad.ts`): completos.
+- [ ] Pide que una persona asesora en protección de datos revise el texto del aviso.
+- [ ] Verifica que el buzón **monica@moni-fit.com** exista y reciba correo: es el contacto del aviso de privacidad.
 - [ ] Decide si conservas los clientes de demostración o los quitas (`npm run demo -- --borrar`).
 - [ ] Ten a la mano: cuenta de GitHub con acceso al repositorio, cuenta de GoDaddy y una tarjeta para verificar
       la cuenta de Oracle (no se cobra mientras uses solo recursos Always Free).
@@ -645,9 +646,23 @@ ssh -i ~/Downloads/ssh-key-monifit.key ubuntu@<IP-del-servidor>
 
 ### 9.4 Pasar el dominio a Cloudflare y crear el túnel
 1. Crea una cuenta en **dash.cloudflare.com** → *Add a domain* → `moni-fit.com` → plan **Free**.
-2. Cloudflare importa los registros DNS actuales. **Si usas correo con @moni-fit.com**, verifica que aparezcan
-   todos los registros **MX**, **TXT** (SPF, DMARC) y **CNAME** del correo antes de continuar; si falta alguno,
-   el correo dejaría de funcionar.
+2. Cloudflare importa los registros DNS actuales. **El dominio tiene correo de GoDaddy (`monica@moni-fit.com`,
+   el contacto del aviso de privacidad)**: antes de continuar, verifica que estén estos 7 registros. Si falta
+   alguno, agrégalo a mano, porque sin ellos el correo dejaría de funcionar. En los CNAME, deja la nube en
+   **gris (DNS only)**:
+
+   | Tipo | Nombre | Contenido | Prioridad |
+   |---|---|---|---|
+   | MX | `@` | `smtp.secureserver.net` | 0 |
+   | MX | `@` | `mailstore1.secureserver.net` | 10 |
+   | TXT | `@` | `v=spf1 include:secureserver.net -all` | |
+   | TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;` | |
+   | CNAME | `email` | `email.secureserver.net` | |
+   | CNAME | `secureserver1._domainkey` | `s1.dkim.moni-fit_com.e20.onsecureserver.net` | |
+   | CNAME | `secureserver2._domainkey` | `s2.dkim.moni-fit_com.e20.onsecureserver.net` | |
+   | SRV | `_autodiscover._tcp` | `autodiscover.secureserver.net`, puerto 443, peso 0 | 0 |
+
+   (Lista tomada del DNS público de moni-fit.com el 27 de septiembre de 2026.)
 3. Cloudflare te dará **dos nameservers** (por ejemplo `ana.ns.cloudflare.com`). En **GoDaddy**:
    *Mis productos → moni-fit.com → DNS → Nameservers → Cambiar → Usaré mis propios servidores de nombres*,
    y escribe los dos de Cloudflare. El dominio sigue siendo tuyo en GoDaddy; solo cambia quién responde el DNS.
@@ -658,7 +673,9 @@ ssh -i ~/Downloads/ssh-key-monifit.key ubuntu@<IP-del-servidor>
    ```bash
    sudo CLOUDFLARE_TUNNEL_TOKEN=<token> bash instalar-servidor.sh
    ```
-6. De vuelta en el túnel, en *Public hostnames → Add a public hostname*, agrega:
+6. Hoy `moni-fit.com` apunta a la página de GoDaddy. En Cloudflare, en *DNS → Records*, **borra solo** los dos
+   registros **A** de `moni-fit.com` (`76.223.105.230` y `13.248.243.5`) y el **CNAME** `www`. **No toques los
+   del correo.** Después, de vuelta en el túnel, en *Public hostnames → Add a public hostname*, agrega:
    - `moni-fit.com` → Service **HTTP** → `localhost:3000`
    - `www.moni-fit.com` → Service **HTTP** → `localhost:3000`
 7. En *SSL/TLS → Edge Certificates*, activa **Always Use HTTPS**.
