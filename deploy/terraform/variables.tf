@@ -55,9 +55,9 @@ variable "dominio" {
   default = "moni-fit.com"
 }
 
-# false: el túnel existe pero el DNS sigue apuntando al sitio anterior. true: moni-fit.com y www
-# apuntan al túnel (antes hay que quitar los registros web anteriores; ver README.md).
+# true: moni-fit.com y www apuntan al túnel (publicado el 1 de octubre de 2026; los registros web
+# anteriores del sitio de GoDaddy se respaldaron en ~/.monifit/respaldos/). false los quitaría.
 variable "publicar_dns" {
   type    = bool
-  default = false
+  default = true
 }
