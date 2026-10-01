@@ -42,3 +42,9 @@ next-env.d.ts
 
 # base de datos local e imágenes subidas
 /data
+
+# Terraform (el estado vive en ~/.monifit/terraform, fuera del repositorio)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
