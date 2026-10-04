@@ -1,0 +1,10 @@
+# Domingos a las 18:00, hora de Ciudad de México.
+[Unit]
+Description=Recordatorio semanal de MoniFit
+
+[Timer]
+OnCalendar=Sun *-*-* 18:00:00 America/Mexico_City
+Persistent=false
+
+[Install]
+WantedBy=timers.target

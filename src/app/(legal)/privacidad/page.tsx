@@ -62,6 +62,9 @@ export default async function AvisoPrivacidad() {
         <li>
           <strong>Seguimiento:</strong> rutinas, planes de nutrición y registros semanales de adherencia.
         </li>
+        <li>
+          <strong>Telegram (opcional):</strong> si activas los avisos, el identificador de tu chat con el bot de MoniFit.
+        </li>
       </ul>
 
       <h2>3. Finalidades</h2>
@@ -71,6 +74,9 @@ export default async function AvisoPrivacidad() {
         <li>Dar seguimiento a tu progreso y ajustar tus planes.</li>
         <li>Darte acceso a tu información a través de la aplicación.</li>
         <li>Comunicarnos contigo sobre tu programa.</li>
+        <li>
+          Si tú lo activas, enviarte por Telegram avisos de tu programa (nuevo plan, nueva rutina, recordatorios y mensajes de Moni).
+        </li>
       </ul>
       <p>No se usan con fines publicitarios ni de mercadotecnia, y no se venden a terceros.</p>
 
@@ -86,6 +92,11 @@ export default async function AvisoPrivacidad() {
         Tus datos no se transfieren a terceros, salvo cuando lo exija una autoridad competente conforme a la ley. La aplicación se aloja
         en servicios de infraestructura en la nube (Oracle Cloud y Cloudflare), que actúan como encargados: solo almacenan y transmiten la
         información de forma cifrada y no la usan para fines propios.
+      </p>
+      <p>
+        Si activas los avisos por Telegram, los mensajes se entregan a través de Telegram. Por eso{" "}
+        <strong>nunca incluyen datos de salud</strong>: solo un aviso breve con el enlace para entrar a MoniFit con tu contraseña. Puedes
+        desactivarlos en cualquier momento desde <strong>Mi cuenta</strong> o escribiendo /desvincular al bot.
       </p>
 
       <h2>6. Seguridad</h2>

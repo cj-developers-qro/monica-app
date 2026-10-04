@@ -21,7 +21,8 @@ como_app git -C "$APP_DIR" pull --ff-only
 echo "3/4 Instalando dependencias y compilando…"
 como_app bash -c "cd $APP_DIR && npm ci --no-audit --no-fund --fetch-retries=5 --fetch-retry-mintimeout=5000 && NEXT_TELEMETRY_DISABLED=1 npm run build && mkdir -p .next/cache"
 # Por si cambió algún servicio en la nueva versión.
-cp "$APP_DIR"/deploy/monifit*.service "$APP_DIR"/deploy/monifit-respaldo.timer /etc/systemd/system/ && systemctl daemon-reload
+cp "$APP_DIR"/deploy/monifit*.service "$APP_DIR"/deploy/monifit*.timer /etc/systemd/system/ && systemctl daemon-reload
+systemctl enable --now monifit-respaldo.timer monifit-recordatorio.timer >/dev/null
 
 echo "4/4 Reiniciando…"
 systemctl restart monifit

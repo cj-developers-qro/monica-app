@@ -4,6 +4,7 @@ import { DetalleRutina } from "@/components/DetalleRutina";
 import { ImagenRutina } from "@/components/ImagenRutina";
 import { InsigniaNivel, InsigniaObjetivo } from "@/components/InsigniaObjetivo";
 import { requerirCliente } from "@/lib/auth";
+import { telegramActivo } from "@/lib/telegram";
 import { listarAsignaciones, listarComposicion, listarPlanes, obtenerCliente } from "@/lib/datos";
 import { hoy } from "@/lib/formulario";
 import { OBJETIVOS } from "@/lib/objetivos";
@@ -14,7 +15,7 @@ export const metadata: Metadata = { title: "Mi resumen" };
 const fechaLarga = (f: string) => new Date(`${f}T12:00:00`).toLocaleDateString("es-MX", { dateStyle: "long" });
 
 export default async function MiResumen() {
-  const { cliente_id } = await requerirCliente();
+  const { cliente_id, telegram_chat_id } = await requerirCliente();
   const [cliente, composicion, asignaciones, planes] = await Promise.all([
     obtenerCliente(cliente_id),
     listarComposicion(cliente_id),
@@ -51,6 +52,17 @@ export default async function MiResumen() {
           detalle={d.estado === "sin_datos" ? "Se calcula con 2 mediciones" : d.titulo}
         />
       </section>
+
+      {telegramActivo() && !telegram_chat_id && (
+        <section className="tarjeta flex flex-wrap items-center justify-between gap-3 p-4">
+          <p className="text-sm text-slate-700">
+            📲 <strong>¿Quieres recibir los avisos de Moni en Telegram?</strong> Tu nuevo plan, tu nueva rutina y un recordatorio cada domingo.
+          </p>
+          <Link href="/cuenta#telegram" className="boton-secundario">
+            Activar avisos
+          </Link>
+        </section>
+      )}
 
       {planVigente && (
         <section className="aviso-marca flex flex-wrap items-center justify-between gap-3">

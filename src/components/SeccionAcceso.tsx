@@ -15,6 +15,7 @@ export async function SeccionAcceso({ clienteId, nombre }: { clienteId: number; 
           debe_cambiar: acceso.debe_cambiar,
           ultimo_acceso: acceso.ultimo_acceso,
           acepto_privacidad: acceso.acepto_privacidad,
+          telegram_vinculado_en: acceso.telegram_vinculado_en,
         }
       }
     />

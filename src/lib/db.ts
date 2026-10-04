@@ -62,6 +62,9 @@ function sembrarCatalogo(db: DatabaseSync) {
 const MIGRACIONES: { tabla: string; columna: string; definicion: string }[] = [
   // Fecha y hora en que el cliente aceptó el aviso de privacidad (NULL = pendiente).
   { tabla: "usuarios", columna: "acepto_privacidad", definicion: "TEXT" },
+  // Chat de Telegram donde la persona recibe avisos (NULL = no vinculado) y desde cuándo.
+  { tabla: "usuarios", columna: "telegram_chat_id", definicion: "TEXT" },
+  { tabla: "usuarios", columna: "telegram_vinculado_en", definicion: "TEXT" },
 ];
 
 function migrar(db: DatabaseSync) {

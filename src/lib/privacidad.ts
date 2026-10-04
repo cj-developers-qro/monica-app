@@ -9,7 +9,7 @@ export const AVISO = {
   /** Correo donde los clientes ejercen sus derechos ARCO o revocan su consentimiento. */
   correo: "monica@moni-fit.com",
   /** Fecha de la última actualización del aviso (AAAA-MM-DD). */
-  actualizado: "2026-09-27",
+  actualizado: "2026-10-04",
 };
 
 /** true mientras falte llenar algún dato del aviso (se muestra una advertencia a la administradora). */

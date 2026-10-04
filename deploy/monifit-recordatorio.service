@@ -1,0 +1,12 @@
+# Recordatorio semanal por Telegram (lo dispara monifit-recordatorio.timer).
+[Unit]
+Description=Recordatorio semanal de MoniFit por Telegram
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=monifit
+Group=monifit
+WorkingDirectory=/opt/monifit
+EnvironmentFile=/etc/monifit/monifit.env
+ExecStart=/usr/bin/node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargador.mjs scripts/recordatorio-semanal.mts

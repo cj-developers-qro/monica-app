@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "admin": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargador.mjs scripts/admin.mts",
-    "demo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargador.mjs scripts/datos-demo.mts"
+    "demo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargador.mjs scripts/datos-demo.mts",
+    "recordatorio": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargador.mjs scripts/recordatorio-semanal.mts"
   },
   "dependencies": {
     "next": "16.3.6",

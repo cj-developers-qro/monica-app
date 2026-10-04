@@ -338,7 +338,9 @@ export async function obtenerAcceso(clienteId: number) {
   await requerirAdmin();
   return (
     (db()
-      .prepare("SELECT id, usuario, activo, debe_cambiar, ultimo_acceso, bloqueado_hasta, acepto_privacidad FROM usuarios WHERE cliente_id = ?")
+      .prepare(
+        "SELECT id, usuario, activo, debe_cambiar, ultimo_acceso, bloqueado_hasta, acepto_privacidad, telegram_vinculado_en FROM usuarios WHERE cliente_id = ?",
+      )
       .get(clienteId) as
       | {
           id: number;
@@ -348,7 +350,39 @@ export async function obtenerAcceso(clienteId: number) {
           ultimo_acceso: string | null;
           bloqueado_hasta: string | null;
           acepto_privacidad: string | null;
+          telegram_vinculado_en: string | null;
         }
       | undefined) ?? null
   );
+}
+
+// --- Avisos (Telegram) --------------------------------------------------------------
+
+export type VinculoTelegram = { cliente_id: number; nombre: string; telegram_vinculado_en: string | null };
+
+/** Clientes con acceso activo y si tienen Telegram vinculado. Solo la administradora. */
+export async function listarVinculosTelegram(): Promise<VinculoTelegram[]> {
+  await connection();
+  await requerirAdmin();
+  return db()
+    .prepare(
+      `SELECT c.id AS cliente_id, c.nombre, u.telegram_vinculado_en
+       FROM usuarios u JOIN clientes c ON c.id = u.cliente_id
+       WHERE u.rol = 'cliente' AND u.activo = 1 ORDER BY u.telegram_vinculado_en IS NULL, c.nombre`,
+    )
+    .all() as VinculoTelegram[];
+}
+
+export type RegistroAviso = { id: number; nombre: string | null; tipo: string; estado: string; error: string | null; creado_en: string };
+
+/** Últimos avisos enviados. Solo la administradora. */
+export async function listarAvisos(limite = 30): Promise<RegistroAviso[]> {
+  await connection();
+  await requerirAdmin();
+  return db()
+    .prepare(
+      `SELECT n.id, u.nombre, n.tipo, n.estado, n.error, n.creado_en
+       FROM notificaciones n LEFT JOIN usuarios u ON u.id = n.usuario_id ORDER BY n.id DESC LIMIT ?`,
+    )
+    .all(limite) as RegistroAviso[];
 }

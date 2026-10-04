@@ -134,3 +134,30 @@ CREATE INDEX IF NOT EXISTS idx_mediciones_cliente ON mediciones(cliente_id, fech
 CREATE INDEX IF NOT EXISTS idx_composicion_cliente ON composicion(cliente_id, fecha);
 CREATE INDEX IF NOT EXISTS idx_rutina_ejercicios ON rutina_ejercicios(rutina_id, orden);
 CREATE INDEX IF NOT EXISTS idx_asignaciones_cliente ON asignaciones(cliente_id, activa);
+
+-- Ajustes de la app editables desde la interfaz (p. ej. el bot de Telegram y la URL pública).
+CREATE TABLE IF NOT EXISTS configuracion (
+  clave TEXT PRIMARY KEY,
+  valor TEXT NOT NULL
+);
+
+-- Códigos de un solo uso para vincular una cuenta con Telegram (t.me/<bot>?start=<codigo>).
+CREATE TABLE IF NOT EXISTS telegram_codigos (
+  codigo TEXT PRIMARY KEY,
+  usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  expira TEXT NOT NULL
+);
+
+-- Historial de avisos enviados (también evita repetir el recordatorio semanal).
+CREATE TABLE IF NOT EXISTS notificaciones (
+  id INTEGER PRIMARY KEY,
+  usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  canal TEXT NOT NULL DEFAULT 'telegram',
+  tipo TEXT NOT NULL,
+  texto TEXT NOT NULL,
+  estado TEXT NOT NULL CHECK (estado IN ('enviado', 'error')),
+  error TEXT,
+  creado_en TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_notificaciones_usuario ON notificaciones(usuario_id, tipo, creado_en);

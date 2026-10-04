@@ -125,9 +125,9 @@ echo "Compilación lista."
 
 paso "8. Servicios"
 if hay_systemd; then
-  cp "$APP_DIR/deploy/monifit.service" "$APP_DIR/deploy/monifit-respaldo.service" "$APP_DIR/deploy/monifit-respaldo.timer" /etc/systemd/system/
+  cp "$APP_DIR"/deploy/monifit*.service "$APP_DIR"/deploy/monifit*.timer /etc/systemd/system/
   systemctl daemon-reload
-  systemctl enable --now monifit monifit-respaldo.timer >/dev/null
+  systemctl enable --now monifit monifit-respaldo.timer monifit-recordatorio.timer >/dev/null
   systemctl restart monifit
 else
   aviso "Este sistema no usa systemd (¿contenedor de pruebas?); se omite la instalación de servicios."

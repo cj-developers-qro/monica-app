@@ -8,6 +8,8 @@ import { CLAVES_ONBOARDING } from "@/lib/cuestionario";
 import { esObjetivo } from "@/lib/objetivos";
 import { entero, fecha, hoy, numero, texto, type EstadoFormulario } from "@/lib/formulario";
 import { copiarRutina, enTransaccion } from "@/lib/escritura";
+import { avisarCliente } from "@/lib/notificaciones";
+import { escaparHtml } from "@/lib/telegram";
 
 function leerCliente(fd: FormData) {
   const nombre = texto(fd, "nombre");
@@ -128,6 +130,14 @@ export async function eliminarComposicion(clienteId: number, id: number) {
 
 // --- Rutinas del cliente --------------------------------------------------------
 
+/** Aviso al cliente de su nueva rutina (si tiene Telegram vinculado). */
+async function avisarRutina(clienteId: number, rutinaId: number) {
+  const r = db().prepare("SELECT nombre FROM rutinas WHERE id = ?").get(rutinaId) as { nombre: string } | undefined;
+  if (r) {
+    await avisarCliente(clienteId, "rutina", `🏋️ <b>Moni te asignó una nueva rutina</b>\n${escaparHtml(r.nombre)}. La encuentras en <b>Mi resumen</b>.`, "/portal");
+  }
+}
+
 function activarRutina(clienteId: number, rutinaId: number, inicio: string, notas = "") {
   db().prepare("UPDATE asignaciones SET activa = 0, fecha_fin = ? WHERE cliente_id = ? AND activa = 1").run(inicio, clienteId);
   db().prepare("INSERT INTO asignaciones (cliente_id, rutina_id, fecha_inicio, notas) VALUES (?, ?, ?, ?)")
@@ -140,6 +150,7 @@ export async function asignarRutina(clienteId: number, fd: FormData) {
   const existe = db().prepare("SELECT 1 FROM rutinas WHERE id = ?").get(rutinaId);
   if (!existe) throw new Error("La rutina no existe.");
   activarRutina(clienteId, rutinaId, fecha(fd, "fecha_inicio"), texto(fd, "notas"));
+  await avisarRutina(clienteId, rutinaId);
   revalidatePath("/", "layout");
 }
 
@@ -155,6 +166,7 @@ export async function personalizarRutina(clienteId: number, rutinaId: number) {
     activarRutina(clienteId, id, hoy(), "Personalizada a partir del catálogo");
     return id;
   });
+  await avisarRutina(clienteId, nuevaId);
   revalidatePath("/", "layout");
   redirect(`/rutinas/${nuevaId}/editar`);
 }

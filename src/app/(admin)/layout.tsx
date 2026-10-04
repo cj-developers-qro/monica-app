@@ -19,6 +19,7 @@ export default async function LayoutAdmin({ children }: LayoutProps<"/">) {
             { href: "/", texto: "Clientes", prefijos: ["/clientes"] },
             { href: "/rutinas", texto: "Rutinas" },
             { href: "/ejercicios", texto: "Ejercicios" },
+            { href: "/avisos", texto: "Avisos" },
           ]}
         />
         <MenuUsuario nombre={usuario.nombre} rol="Administradora" apilado className="border-t border-white/20 pt-4 md:mt-auto" />

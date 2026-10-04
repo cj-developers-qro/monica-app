@@ -12,6 +12,7 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
 ## Contenido
 
 1. [¿Quién puede hacer qué?](#1-quién-puede-hacer-qué)
+   - [1.1 ¿Qué información captura cada quien?](#11-qué-información-captura-cada-quien)
 2. [Entrar por primera vez (Moni)](#2-entrar-por-primera-vez-moni)
 3. [Guía para Moni, paso a paso](#3-guía-para-moni-paso-a-paso)
    - [3.1 Dar de alta a un cliente](#31-dar-de-alta-a-un-cliente)
@@ -24,6 +25,7 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
    - [3.8 Plan de nutrición mensual](#38-plan-de-nutrición-mensual)
    - [3.9 Cambios y bajas de clientes](#39-cambios-y-bajas-de-clientes)
    - [3.10 Tu cuenta y tu contraseña](#310-tu-cuenta-y-tu-contraseña)
+   - [3.11 Avisos por Telegram](#311-avisos-por-telegram)
 4. [Guía para los clientes](#4-guía-para-los-clientes)
 5. [Rutina de trabajo recomendada para Moni](#5-rutina-de-trabajo-recomendada-para-moni)
 6. [Preguntas frecuentes](#6-preguntas-frecuentes)
@@ -47,16 +49,49 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
 | Registrar cómo le fue cada semana con su plan de nutrición | ✅ | ✅ |
 | Exportar el plan mensual a PDF o Excel | ✅ | ✅ (solo el suyo) |
 | Cambiar su propia contraseña | ✅ | ✅ |
+| Conectar el bot de Telegram y enviar mensajes a clientes | ✅ | — |
+| Recibir avisos por Telegram (opcional) | ✅ | ✅ |
 
 Un cliente **nunca** puede ver la información de otro cliente, aunque intente escribir la dirección a mano:
 la aplicación revisa quién eres en cada pantalla y en cada acción.
+
+### 1.1 ¿Qué información captura cada quien?
+
+**Casi todo lo captura Moni.** El cliente solo crea su contraseña, acepta el aviso de privacidad y, una vez a la
+semana, registra cómo le fue con su plan. Todo lo demás lo ve, pero no lo edita.
+
+| Información | ¿Quién la captura? | ¿Cuándo? | Dónde |
+|---|---|---|---|
+| Cuestionario de ingreso (salud, hábitos, alimentación, objetivo) | **Moni**, en la entrevista con el cliente | Al dar de alta | *Clientes → + Nuevo cliente* |
+| Correo de acceso del cliente | **Moni** | Al darle acceso | *Editar perfil y acceso* |
+| Medidas con cinta (brazo, pierna, cintura…) | **Moni** | Cada 2–4 semanas | Pestaña *Antropometría* |
+| Peso, % de grasa, % de músculo, grasa visceral | **Moni** (báscula) | Cada 2–4 semanas | Pestaña *Composición corporal* |
+| Rutina | **Moni** | Al inicio y cuando haya que cambiarla | Pestaña *Rutinas* |
+| Plan de nutrición | **Moni** (la app lo calcula) | Cada mes | Pestaña *Nutrición* |
+| Su propia contraseña | **Cliente** | Primer ingreso (y cuando quiera cambiarla) | *Mi cuenta* |
+| Aceptación del aviso de privacidad | **Cliente** | Primer ingreso, una sola vez | Se le pide al entrar |
+| **Seguimiento semanal** | **Cliente** (o Moni por él) | **Cada semana**, de preferencia el domingo | *Mi nutrición → Seguimiento semanal* |
+| Vincular Telegram | **Cliente** (opcional) | Cuando quiera | *Mi cuenta → Avisos por Telegram* |
+
+#### El seguimiento semanal: lo único que llena el cliente con regularidad
+| Campo | ¿Obligatorio? | Qué escribir |
+|---|---|---|
+| **Fecha** | Sí (ya viene con la de hoy) | El día en que registra. |
+| **Adherencia al plan (%)** | **Sí** | Qué tanto siguió el plan esa semana, de 0 a 100. Forma fácil de calcularlo: *comidas que hizo como decía el plan ÷ comidas del plan en la semana × 100*. Ejemplo: con 4 comidas al día son 28 en la semana; si cumplió 21, su adherencia es **75 %**. |
+| **Agua promedio (L)** | No | Litros de agua al día, en promedio. Ejemplo: 2.5. |
+| **Energía (1–5)** | No | Cómo se sintió de energía: 1 = muy cansado, 3 = normal, 5 = con mucha energía. |
+| **Hambre (1–5)** | No | Cuánta hambre tuvo con el plan: 1 = nada, 3 = normal, 5 = mucha hambre todo el día. |
+| **Notas** | No | Lo que Moni deba saber: un evento social, una molestia, un alimento que no le cayó bien. |
+
+> **Por qué importa:** con la adherencia y el cambio de peso, la app ajusta automáticamente las calorías del plan
+> del mes siguiente. Si un cliente no registra su semana, el plan no se puede ajustar bien. Por eso, si tiene
+> Telegram vinculado, el domingo le llega un recordatorio.
 
 ---
 
 ## 2. Entrar por primera vez (Moni)
 
-1. Abre la aplicación en el navegador (la dirección te la da quien la instaló; en la computadora donde
-   está instalada es **http://localhost:3000**).
+1. Abre **https://moni-fit.com** en el navegador de tu computadora o de tu celular.
 2. Verás la pantalla rosa de **Iniciar sesión**.
 3. Escribe tu correo **monica@moni-fit.com** y la **contraseña temporal** que te entregaron.
 
@@ -384,7 +419,45 @@ Todo está en **Editar perfil y acceso**:
 
 ---
 
+### 3.11 Avisos por Telegram
+
+MoniFit puede avisar por **Telegram** a tus clientes, y a ti, cuando pasa algo importante. Es gratis. Los
+mensajes **nunca llevan datos de salud**: solo un aviso corto con el botón **Abrir MoniFit**, y la información se
+ve dentro de la app, con contraseña.
+
+<p align="center"><img src="docs/capturas/30-avisos.png" alt="Pantalla de avisos por Telegram"></p>
+
+**Configuración (una sola vez):**
+1. En Telegram, busca **@BotFather** (el bot oficial de Telegram para crear bots) y escríbele `/newbot`.
+2. Te pide un **nombre**: escribe `MoniFit`.
+3. Te pide un **usuario** que termine en `bot`, por ejemplo `MoniFitAvisosBot` (si está ocupado, prueba otro).
+4. BotFather responde con un **token**, un texto largo como `123456789:AAH…`. **Es secreto**: no lo compartas.
+5. En MoniFit entra a **Avisos** (menú rosa), pega el token y presiona **Conectar bot**. Debe aparecer
+   *"✓ Conectado como @TuBot"*.
+6. En **2. Tu Telegram** presiona **Vincular Telegram** → se abre Telegram → presiona **Iniciar**. Desde ese
+   momento te llegarán avisos. Para comprobarlo, usa **Enviarme un mensaje de prueba**.
+
+**Qué avisos se envían solos:**
+| Aviso | A quién | Cuándo |
+|---|---|---|
+| 🥗 Tu nuevo plan de nutrición ya está listo | Cliente | Al generar su plan |
+| 🏋️ Moni te asignó una nueva rutina | Cliente | Al asignar o personalizar su rutina |
+| 📝 ¿Cómo te fue esta semana? | Cliente que aún no registró su semana | Domingos a las 6 p. m. (no se repite) |
+| 🔔 *Cliente* registró su seguimiento semanal | Tú | Cuando un cliente lo registra desde su portal |
+
+**Mensajes tuyos:** en **3. Enviar un mensaje** eliges *Todos los clientes con Telegram* o una persona, escribes
+y presionas **Enviar por Telegram**. Sirve para avisos generales (días festivos, cambios de horario). No escribas
+datos de salud en estos mensajes.
+
+**Clientes:** cada quien activa Telegram por su cuenta desde **Mi cuenta** (tú no puedes hacerlo por ellos). En
+*Avisos → Clientes con acceso* y en *Acceso a la aplicación* de cada cliente ves quién ya lo tiene. Si alguien
+bloquea el bot, la app lo desvincula sola. Abajo, el **Historial** muestra cada aviso enviado y si hubo algún error.
+
 ## 4. Guía para los clientes
+
+> **Lo único que tú capturas** es tu contraseña (la primera vez), la aceptación del aviso de privacidad y,
+> **cada semana, tu seguimiento**. Todo lo demás (medidas, rutina y plan) lo registra Moni. Detalle en la
+> [sección 1.1](#11-qué-información-captura-cada-quien).
 
 *(Puedes copiar esta sección y enviársela a tus clientes).*
 
@@ -412,6 +485,12 @@ Todo está en **Editar perfil y acceso**:
 5. **Exportar mi plan:** botón **Exportar mi plan** → **Descargar PDF / Imprimir** (elige *Guardar como PDF*)
    o **Descargar Excel (CSV)**.
 6. **Mi cuenta:** cambia tu contraseña. **Salir** cierra tu sesión.
+   - **Avisos por Telegram (opcional):** presiona **📲 Vincular Telegram** → se abre Telegram → presiona
+     **Iniciar**. Recibirás tu nuevo plan, tu nueva rutina, un recordatorio los domingos y los mensajes de Moni.
+     Para dejar de recibirlos, presiona **Desvincular** o escríbele `/desvincular` al bot.
+
+<p align="center"><img src="docs/capturas/31-cuenta-telegram.png" alt="Vincular Telegram desde Mi cuenta" width="560"></p>
+
 7. **En el celular:** la app se adapta a la pantalla. Para tenerla a la mano, en el navegador usa
    *Compartir → Agregar a pantalla de inicio*; aparecerá con el ícono de MoniFit.
 
@@ -427,7 +506,7 @@ Todo está en **Editar perfil y acceso**:
 | Cuándo | Qué hacer |
 |---|---|
 | Cliente nuevo | Onboarding → crear acceso → registrar medidas y composición → asignar o personalizar rutina → generar plan de nutrición. |
-| Cada semana | Revisar el **Seguimiento semanal** de nutrición de cada cliente. |
+| Cada semana | Revisar el **Seguimiento semanal** de nutrición de cada cliente (con Telegram vinculado, te llega un aviso cuando lo registran). |
 | Cada 2–4 semanas | Registrar **medidas** y **composición corporal**; revisar **Recomposición**. |
 | Cada mes | **Generar nuevo plan** de nutrición; si el progreso se estancó, ajustar o cambiar la rutina. |
 | Cada mes (o más seguido) | **Respaldo** de los datos (ver [sección 8](#respaldos)). |
@@ -459,12 +538,22 @@ variante, usa **Duplicar**.
 
 ---
 
+**Un cliente dice que no le llegan los avisos de Telegram.**
+Revisa en *Avisos → Clientes con acceso* que tenga Telegram vinculado y en el **Historial** si hubo errores. Si
+bloqueó el bot, se desvinculó solo: pídele que lo vincule otra vez desde *Mi cuenta*.
+
+**¿Puedo escribirle a un cliente por el bot y que me conteste?**
+No: el bot solo **envía** avisos. Si alguien le escribe, el bot responde cómo vincular su cuenta. Para conversar,
+usa tu Telegram o WhatsApp personal.
+
 ## 7. Privacidad y seguridad
 
 - **Aviso de privacidad:** es público en `/privacidad` (enlace al pie del inicio de sesión). Cada cliente debe
   aceptarlo, con su consentimiento expreso para el tratamiento de datos de salud, antes de ver su información.
   En *Acceso a la aplicación* ves si cada cliente ya lo aceptó y cuándo. Los datos de la responsable se
   completan en `src/lib/privacidad.ts`; mientras falten, al entrar como administradora verás una advertencia en el aviso.
+- **Telegram:** es opcional y lo activa cada persona. Los avisos pasan por Telegram, por eso nunca incluyen datos
+  de salud. Solo se guarda el identificador del chat. El aviso de privacidad lo explica.
 - Las contraseñas se guardan **cifradas** (scrypt); nadie puede leerlas, ni siquiera en la base de datos.
 - Cada cliente solo puede ver y exportar **su propio** expediente. La app lo verifica en cada pantalla, en cada
   consulta y en cada acción, no solo en los menús.
@@ -516,6 +605,13 @@ contraseña temporal** y cierra sus sesiones. Sirve también para recuperar el a
 nutrición de la app, y muestra las contraseñas temporales de su portal. `npm run demo -- --borrar` los elimina.
 Solo afecta a los clientes marcados como demostración.
 
+**Telegram:** el token del bot se guarda en la tabla `configuracion` cuando Moni lo pega en *Avisos* (también
+puede definirse con la variable `TELEGRAM_BOT_TOKEN`). Al conectarlo, la app registra el webhook
+`https://<dominio>/api/telegram` con un secreto derivado del token, y Telegram lo envía en cada llamada. La
+conexión debe hacerse desde la dirección pública con HTTPS. El recordatorio semanal lo ejecuta el timer
+`monifit-recordatorio.timer` (domingos 18:00, hora de Ciudad de México); a mano: `npm run recordatorio`. Para
+pruebas sin Telegram real existe `TELEGRAM_API_URL`, que apunta a una API simulada.
+
 ### Datos y respaldos <a id="respaldos"></a>
 Todos los datos viven en la carpeta **`data/`** (ignorada por git):
 - `data/app-deportiva.db` — base de datos: clientes, medidas, rutinas, planes, usuarios.
@@ -555,6 +651,11 @@ src/components/              componentes compartidos (logotipo, vistas de plan, 
 src/lib/auth.ts              sesiones y verificación de roles
 src/lib/contrasenas.ts       cifrado (scrypt) y contraseñas temporales
 src/lib/privacidad.ts        datos del aviso de privacidad (completar antes de publicar)
+src/lib/telegram.ts          cliente de la API de bots de Telegram (token, webhook, envío)
+src/lib/notificaciones.ts    avisos a clientes y administradora, con historial
+src/app/api/telegram/        webhook del bot (vinculación con /start <código>, /desvincular)
+src/app/(admin)/avisos/      pantalla Avisos (conectar el bot, mensajes, historial)
+scripts/recordatorio-semanal.mts  recordatorio de los domingos (npm run recordatorio)
 src/app/(legal)/privacidad/  aviso de privacidad y consentimiento de los clientes
 src/app/salud/               chequeo de salud para el monitoreo
 src/lib/datos.ts             consultas; cada una verifica quién la pide
@@ -720,6 +821,7 @@ En **uptimerobot.com** (plan gratuito) crea un monitor *HTTP(s)* hacia **https:/
 | Ver si la app está funcionando | `systemctl status monifit cloudflared` |
 | Ver los registros de la app | `journalctl -u monifit -f` |
 | Hacer un respaldo ahora | `sudo systemctl start monifit-respaldo` |
+| Enviar ahora el recordatorio semanal de Telegram | `sudo systemctl start monifit-recordatorio && journalctl -u monifit-recordatorio -n 5` |
 | Restaurar un respaldo | `sudo /opt/monifit/deploy/restaurar.sh /var/backups/monifit/<archivo>.tar.gz` |
 | Traer un respaldo de R2 | `sudo -u monifit bash -c 'set -a; . /etc/monifit/respaldo.env; rclone copy r2:monifit-respaldos/<archivo> /tmp/'` |
 | Nueva contraseña temporal para Moni | `sudo -u monifit bash -c 'set -a; . /etc/monifit/monifit.env; cd /opt/monifit && npm run admin -- monica@moni-fit.com Moni'` |

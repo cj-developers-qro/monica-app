@@ -5,7 +5,9 @@ import { redirect } from "next/navigation";
 import { requerirAccesoCliente, requerirAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { entero, fecha, numero, texto, type EstadoFormulario } from "@/lib/formulario";
+import { avisarAdministradoras, avisarCliente } from "@/lib/notificaciones";
 import { ajusteAdaptativo, generarPlan } from "@/lib/nutricion";
+import { escaparHtml } from "@/lib/telegram";
 import { esObjetivo } from "@/lib/objetivos";
 
 type Fila = Record<string, unknown>;
@@ -70,6 +72,13 @@ export async function generarPlanNutricional(clienteId: number, _estado: EstadoF
   const r = db()
     .prepare("INSERT INTO planes_nutricion (cliente_id, fecha_inicio, fecha_fin, plan, notas) VALUES (?, ?, ?, ?, ?)")
     .run(clienteId, plan.fecha_inicio, plan.fecha_fin, JSON.stringify(plan), texto(fd, "notas"));
+  const dia = (f: string) => new Date(`${f}T12:00:00`).toLocaleDateString("es-MX", { day: "numeric", month: "long" });
+  await avisarCliente(
+    clienteId,
+    "plan",
+    `🥗 <b>Tu nuevo plan de nutrición ya está listo</b>\nVa del ${dia(plan.fecha_inicio)} al ${dia(plan.fecha_fin)}. Encuéntralo en <b>Mi nutrición</b>.`,
+    "/portal/nutricion",
+  );
   revalidatePath(`/clientes/${clienteId}`, "layout");
   redirect(`/clientes/${clienteId}/nutricion?plan=${r.lastInsertRowid}`);
 }
@@ -83,7 +92,7 @@ export async function eliminarPlan(clienteId: number, id: number) {
 
 export async function registrarSeguimiento(clienteId: number, planId: number | null, _estado: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
   // La administradora o el propio cliente desde su portal.
-  await requerirAccesoCliente(clienteId);
+  const usuario = await requerirAccesoCliente(clienteId);
   if (planId != null && !db().prepare("SELECT 1 FROM planes_nutricion WHERE id = ? AND cliente_id = ?").get(planId, clienteId)) {
     return { error: "El plan no pertenece a este cliente." };
   }
@@ -99,6 +108,14 @@ export async function registrarSeguimiento(clienteId: number, planId: number | n
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(clienteId, planId, fecha(fd, "fecha"), Math.round(adherencia), numero(fd, "agua_litros"), escala("energia"), escala("hambre"), texto(fd, "notas") || null);
+  // Aviso a Moni cuando el cliente registra desde su portal (sin datos de salud en el mensaje).
+  if (usuario.rol === "cliente") {
+    await avisarAdministradoras(
+      "seguimiento",
+      `📝 <b>${escaparHtml(usuario.nombre)}</b> registró su seguimiento semanal.`,
+      `/clientes/${clienteId}/nutricion`,
+    );
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

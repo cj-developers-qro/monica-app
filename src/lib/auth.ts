@@ -20,6 +20,7 @@ export type Usuario = {
   cliente_id: number | null;
   debe_cambiar: number;
   acepto_privacidad: string | null;
+  telegram_chat_id: string | null;
 };
 
 // --- Contraseñas ---------------------------------------------------------------
@@ -69,7 +70,7 @@ export const usuarioActual = cache(async (): Promise<Usuario | null> => {
   if (!token) return null;
   const fila = db()
     .prepare(
-      `SELECT u.id, u.usuario, u.nombre, u.rol, u.cliente_id, u.debe_cambiar, u.acepto_privacidad
+      `SELECT u.id, u.usuario, u.nombre, u.rol, u.cliente_id, u.debe_cambiar, u.acepto_privacidad, u.telegram_chat_id
        FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id
        WHERE s.token_hash = ? AND s.expira > datetime('now') AND u.activo = 1`,
     )
