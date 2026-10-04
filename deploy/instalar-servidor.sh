@@ -149,6 +149,8 @@ if [ -n "${CLOUDFLARE_TUNNEL_TOKEN:-}" ]; then
     cloudflared service install "$CLOUDFLARE_TUNNEL_TOKEN"
     echo "Túnel instalado como servicio."
   fi
+elif hay_systemd && systemctl is-active --quiet cloudflared; then
+  echo "✓ El túnel ya está instalado y activo."
 else
   aviso "Falta CLOUDFLARE_TUNNEL_TOKEN: el túnel no se conectó todavía (ver README)."
 fi
