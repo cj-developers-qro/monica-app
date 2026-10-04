@@ -14,6 +14,7 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
 1. [¿Quién puede hacer qué?](#1-quién-puede-hacer-qué)
    - [1.1 ¿Qué información captura cada quien?](#11-qué-información-captura-cada-quien)
 2. [Entrar por primera vez (Moni)](#2-entrar-por-primera-vez-moni)
+   - [Primeros pasos: lista para empezar](#primeros-pasos-lista-para-empezar)
 3. [Guía para Moni, paso a paso](#3-guía-para-moni-paso-a-paso)
    - [3.1 Dar de alta a un cliente](#31-dar-de-alta-a-un-cliente)
    - [3.2 Darle acceso a la app](#32-darle-acceso-a-la-app)
@@ -27,6 +28,14 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
    - [3.10 Tu cuenta y tu contraseña](#310-tu-cuenta-y-tu-contraseña)
    - [3.11 Avisos por Telegram](#311-avisos-por-telegram)
 4. [Guía para los clientes](#4-guía-para-los-clientes)
+   - [4.1 Tu primer ingreso](#41-tu-primer-ingreso)
+   - [4.2 Qué encuentras en la app](#42-qué-encuentras-en-la-app)
+   - [4.3 Registrar tu semana](#43-registrar-tu-semana-cada-domingo-1-minuto)
+   - [4.4 Activar los avisos por Telegram](#44-activar-los-avisos-por-telegram-opcional)
+   - [4.5 Descargar tu plan del mes](#45-descargar-tu-plan-del-mes)
+   - [4.6 Tener MoniFit en tu celular como una app](#46-tener-monifit-en-tu-celular-como-una-app)
+   - [4.7 Tu cuenta y tu contraseña](#47-tu-cuenta-y-tu-contraseña)
+   - [4.8 Pequeño glosario](#48-pequeño-glosario)
 5. [Rutina de trabajo recomendada para Moni](#5-rutina-de-trabajo-recomendada-para-moni)
 6. [Preguntas frecuentes](#6-preguntas-frecuentes)
 7. [Privacidad y seguridad](#7-privacidad-y-seguridad)
@@ -109,12 +118,24 @@ semana, registra cómo le fue con su plan. Todo lo demás lo ve, pero no lo edit
 
 ### Tu pantalla principal
 
-- **Barra rosa de la izquierda:** menú con *Clientes*, *Rutinas* y *Ejercicios*. Abajo aparece tu nombre,
-  el enlace **Mi cuenta** y el botón **Salir**.
+- **Barra rosa de la izquierda:** menú con *Clientes*, *Rutinas*, *Ejercicios* y *Avisos*. Abajo aparece tu
+  nombre, el enlace **Mi cuenta** y el botón **Salir**.
 - **Clientes:** una tarjeta por cliente con su objetivo, peso actual, % de grasa, rutina asignada y si
   tiene o no acceso a la app.
 
 <p align="center"><img src="docs/capturas/03-clientes.png" alt="Panel de clientes de Moni"></p>
+
+### Primeros pasos: lista para empezar
+Una sola vez, en este orden:
+- [ ] **Crear tu contraseña** (pasos de arriba).
+- [ ] **Conectar el bot de Telegram** y vincular tu propio Telegram, para enterarte cuando tus clientes registren
+      su semana ([sección 3.11](#311-avisos-por-telegram), 5 minutos).
+- [ ] **Explorar a los clientes de demostración** (abajo), para ver cómo se ve todo con datos.
+- [ ] **Dar de alta a tu primer cliente real** con el cuestionario ([3.1](#31-dar-de-alta-a-un-cliente)).
+- [ ] **Darle acceso a la app** y enviarle su correo, su contraseña temporal y la
+      [guía para clientes](#4-guía-para-los-clientes) ([3.2](#32-darle-acceso-a-la-app)).
+- [ ] **Registrar sus medidas y composición**, **asignarle rutina** y **generar su plan** ([3.3 a 3.8](#33-registrar-medidas-con-cinta-antropometría)).
+- [ ] Cuando ya no los necesites, **eliminar los clientes de demostración**.
 
 
 ### Clientes de demostración
@@ -197,7 +218,16 @@ Mientras un cliente no tenga acceso, su perfil muestra el aviso *"aún no puede 
    - la dirección de la aplicación,
    - su correo,
    - la contraseña temporal.
-5. La primera vez que entre, la app le pedirá crear su propia contraseña.
+5. La primera vez que entre, la app le pedirá crear su propia contraseña y aceptar el aviso de privacidad.
+
+**Mensaje sugerido para enviarle** (por WhatsApp o correo):
+> ¡Hola! Ya tienes acceso a **MoniFit**, donde verás tu rutina, tu progreso y tu plan de nutrición.
+> 1. Entra a **https://moni-fit.com**
+> 2. Correo: *(su correo)*
+> 3. Contraseña temporal: *(la que te mostró la app)*. Te pedirá crear la tuya.
+>
+> Cada domingo registra en *Mi nutrición → Seguimiento semanal* cómo te fue. Si quieres recibir avisos en
+> Telegram, actívalos en *Mi cuenta*. Cualquier duda, aquí estoy. 💪
 
 En esa misma sección puedes ver el **estado** del acceso (activo, con contraseña temporal o desactivado) y la
 fecha de su **último ingreso**.
@@ -449,55 +479,160 @@ ve dentro de la app, con contraseña.
 y presionas **Enviar por Telegram**. Sirve para avisos generales (días festivos, cambios de horario). No escribas
 datos de salud en estos mensajes.
 
-**Clientes:** cada quien activa Telegram por su cuenta desde **Mi cuenta** (tú no puedes hacerlo por ellos). En
+**Problemas al configurar el bot:**
+| Mensaje o situación | Qué hacer |
+|---|---|
+| *"Ese no parece un token de BotFather"* | Copia el token completo: números, dos puntos y letras, sin espacios. Si lo perdiste, en @BotFather escribe `/mybots` → tu bot → **API Token**. |
+| *"Telegram rechazó el token"* | El token cambió o se revocó. Pide uno nuevo en @BotFather (`/mybots` → tu bot → **API Token** → **Revoke**) y pégalo otra vez. |
+| *"Abre MoniFit desde su dirección pública con HTTPS"* | Entra por **https://moni-fit.com** (no por una IP ni por `localhost`) y vuelve a conectar. |
+| BotFather dice que el usuario ya está ocupado | Prueba con otro que termine en `bot`, por ejemplo `MoniFitAvisos2Bot`. |
+| Quiero cambiar de bot | **Desconectar bot** y conecta el nuevo token. Los clientes tendrán que volver a vincularse. |
+| Quiero cambiar la foto o la descripción del bot | En @BotFather: `/setuserpic` y `/setdescription`. |
+
+**Clientes:** cada quien activa Telegram por su cuenta desde **Mi cuenta** (tú no puedes hacerlo por ellos);
+la [guía para clientes, 4.4](#44-activar-los-avisos-por-telegram-opcional) lo explica paso a paso. En
 *Avisos → Clientes con acceso* y en *Acceso a la aplicación* de cada cliente ves quién ya lo tiene. Si alguien
 bloquea el bot, la app lo desvincula sola. Abajo, el **Historial** muestra cada aviso enviado y si hubo algún error.
 
 ## 4. Guía para los clientes
 
+*Esta sección está escrita para los clientes de Moni.*
+
+> **Moni:** este repositorio de GitHub es privado, así que tus clientes **no pueden abrir este enlace**. Para
+> compartirles la guía, copia esta sección (de 4.1 a 4.8) en un mensaje o documento, o imprímela como PDF
+> desde el navegador (*Imprimir → Guardar como PDF*).
+
 > **Lo único que tú capturas** es tu contraseña (la primera vez), la aceptación del aviso de privacidad y,
-> **cada semana, tu seguimiento**. Todo lo demás (medidas, rutina y plan) lo registra Moni. Detalle en la
-> [sección 1.1](#11-qué-información-captura-cada-quien).
+> **cada semana, tu seguimiento**. Todo lo demás (medidas, rutina y plan de nutrición) lo registra Moni.
+> Activar los avisos por Telegram es opcional.
 
-*(Puedes copiar esta sección y enviársela a tus clientes).*
-
-1. **Entrar:** abre la dirección de la app, escribe tu correo y la contraseña temporal que te dio Moni.
-   La primera vez te pedirá crear tu propia contraseña y leer y aceptar el **aviso de privacidad**, que explica
-   cómo se cuidan tus datos de salud.
+### 4.1 Tu primer ingreso
+1. Moni te comparte tres cosas: la dirección **https://moni-fit.com**, tu **correo** y una **contraseña temporal**
+   (algo como `fresa-luna-4821`).
+2. Abre https://moni-fit.com en tu celular o computadora, escribe tu correo y la contraseña temporal, y presiona
+   **Entrar**.
+3. Crea **tu propia contraseña**: escribe primero la temporal, luego tu nueva contraseña dos veces (mínimo 8
+   caracteres) y presiona **Guardar y continuar**.
+4. Lee el **aviso de privacidad**, que explica cómo se cuidan tus datos de salud. Al final, marca la casilla y
+   presiona **Acepto y continuar**. Solo se te pide una vez.
 
 <p align="center"><img src="docs/capturas/29-aviso-privacidad.png" alt="Aceptación del aviso de privacidad" width="720"></p>
 
-2. **Mi resumen:** tu peso, % de grasa y % de músculo más recientes, cómo va tu progreso, las fechas de tu plan
-   de nutrición y **tu rutina** con la imagen de los músculos que trabajas y los ejercicios de cada día.
+5. Entras a **Mi resumen**. ¡Listo!
+
+### 4.2 Qué encuentras en la app
+La barra rosa de arriba tiene tres secciones:
+
+| Sección | Qué ves |
+|---|---|
+| **Mi resumen** | Tu peso, % de grasa y % de músculo más recientes, cómo va tu progreso, las fechas de tu plan de nutrición y **tu rutina**: la imagen de los músculos que trabajas y los ejercicios de cada día, con series, repeticiones y descanso. |
+| **Mi progreso** | Tus gráficas de peso, grasa y músculo a lo largo del tiempo, y la tabla con tus medidas. |
+| **Mi nutrición** | Tu menú del mes, semana por semana: cada comida con sus porciones en gramos y en medidas caseras (tazas, piezas, cucharadas), la lista de compras de la semana y el **seguimiento semanal**. |
 
 <p align="center"><img src="docs/capturas/25-portal-resumen.png" alt="Portal del cliente: Mi resumen"></p>
 
-3. **Mi progreso:** tus gráficas de peso, grasa y músculo, y la tabla con tus medidas.
+**Cómo leer tu rutina:**
+- **Series:** cuántas veces repites el bloque del ejercicio.
+- **Reps (repeticiones):** cuántas veces haces el movimiento en cada serie. "10–12" significa entre 10 y 12; "30 s" significa sostenerlo 30 segundos.
+- **Descanso:** el tiempo que descansas entre una serie y la siguiente.
+- **Día A, Día B…:** cada día es una sesión distinta; alterna los días según lo que te indique Moni.
 
 <p align="center"><img src="docs/capturas/26-portal-progreso.png" alt="Portal del cliente: Mi progreso"></p>
 
-4. **Mi nutrición:** tu menú del mes, semana por semana, con porciones y lista de compras.
-   - Al final de cada semana llena **Seguimiento semanal**: qué porcentaje del plan cumpliste, cuánta agua
-     tomaste y cómo te sentiste de energía y hambre. Con eso Moni ajusta tu siguiente plan.
+**Cómo leer tu plan de nutrición:**
+- Los días de **Entrenamiento** tienen un poco más de carbohidratos que los de **Descanso**.
+- Los botones **Semana 1 a 4** cambian la semana que ves; la semana actual se abre sola.
+- Al final de cada semana está la **Lista de compras**.
+- En **Recomendaciones** hay consejos personalizados (agua, descanso, digestión…).
 
 <p align="center"><img src="docs/capturas/27-portal-nutricion.png" alt="Portal del cliente: Mi nutrición"></p>
 
-5. **Exportar mi plan:** botón **Exportar mi plan** → **Descargar PDF / Imprimir** (elige *Guardar como PDF*)
-   o **Descargar Excel (CSV)**.
-6. **Mi cuenta:** cambia tu contraseña. **Salir** cierra tu sesión.
-   - **Avisos por Telegram (opcional):** presiona **📲 Vincular Telegram** → se abre Telegram → presiona
-     **Iniciar**. Recibirás tu nuevo plan, tu nueva rutina, un recordatorio los domingos y los mensajes de Moni.
-     Para dejar de recibirlos, presiona **Desvincular** o escríbele `/desvincular` al bot.
+### 4.3 Registrar tu semana (cada domingo, 1 minuto)
+Es lo único que capturas con regularidad, y es muy importante: con esto **Moni ajusta tu plan del siguiente mes**.
+
+1. Entra a **Mi nutrición** y baja hasta **Seguimiento semanal**.
+2. Llena los campos:
+   - **Adherencia al plan (%)**, obligatorio: qué tanto seguiste el plan esa semana. Cuenta las comidas que
+     hiciste como decía el plan y divídelas entre las comidas de la semana. Ejemplo: con 4 comidas al día son
+     28; si cumpliste 21, escribe **75**.
+   - **Agua promedio (L):** litros al día, por ejemplo `2.5`.
+   - **Energía (1–5):** 1 = muy cansado, 3 = normal, 5 = con mucha energía.
+   - **Hambre (1–5):** 1 = nada de hambre, 3 = normal, 5 = mucha hambre todo el día.
+   - **Notas:** lo que Moni deba saber, por ejemplo "tuve una boda el sábado" o "el camote me cayó pesado".
+3. Presiona **Registrar semana**. Verás tu registro en la tabla y en la gráfica.
+
+<p align="center"><img src="docs/capturas/33-seguimiento-semanal.png" alt="Formulario del seguimiento semanal"></p>
+
+> Sé honesto: un 60 % real ayuda más que un 100 % que no fue. Moni usa estos datos para ajustar tu plan, no para regañarte.
+
+### 4.4 Activar los avisos por Telegram (opcional)
+Con Telegram recibes en tu celular:
+- 🥗 **"Tu nuevo plan de nutrición ya está listo"**, cuando Moni te prepara uno nuevo.
+- 🏋️ **"Moni te asignó una nueva rutina"**, cuando cambia tu rutina.
+- 📝 **"¿Cómo te fue esta semana?"**, los domingos en la tarde, solo si aún no registras tu semana.
+- 💬 **Mensajes de Moni**, por ejemplo cambios de horario o días festivos.
+
+Cada aviso trae el botón **Abrir MoniFit**. Por privacidad, los mensajes **nunca incluyen tus datos de salud**:
+esos solo se ven dentro de la app, con tu contraseña.
+
+**Cómo activarlo:**
+1. Si no tienes Telegram, instálalo desde la App Store o Google Play y crea tu cuenta con tu número de celular.
+2. En MoniFit verás la invitación **"¿Quieres recibir los avisos de Moni en Telegram?"**: presiona
+   **Activar avisos**. También puedes entrar a **Mi cuenta** (arriba a la derecha) → **Avisos por Telegram**.
+
+<p align="center"><img src="docs/capturas/32-portal-invitacion-telegram.png" alt="Invitación a activar los avisos por Telegram"></p>
+
+3. Presiona **📲 Vincular Telegram**. Se abre Telegram con el bot de MoniFit.
 
 <p align="center"><img src="docs/capturas/31-cuenta-telegram.png" alt="Vincular Telegram desde Mi cuenta" width="560"></p>
 
-7. **En el celular:** la app se adapta a la pantalla. Para tenerla a la mano, en el navegador usa
-   *Compartir → Agregar a pantalla de inicio*; aparecerá con el ícono de MoniFit.
+4. En Telegram, presiona **Iniciar** (o *Start*). El bot te responde *"✅ ¡Listo! Aquí recibirás los avisos de MoniFit"*.
+5. Vuelve a MoniFit y recarga la página: en **Mi cuenta** verás **"✓ Telegram vinculado"**. Con **Enviarme un
+   mensaje de prueba** compruebas que llega.
+
+**Para dejar de recibir avisos:** en **Mi cuenta** presiona **Desvincular**, o escríbele `/desvincular` al bot.
+
+**Si algo no funciona:**
+| Problema | Solución |
+|---|---|
+| El bot dice *"Este enlace ya no es válido o expiró"* | El enlace dura 30 minutos y sirve una sola vez. Vuelve a **Mi cuenta → Vincular Telegram**. |
+| Al presionar *Vincular Telegram* no se abre la app | Instala Telegram y vuelve a intentarlo. En computadora se abre Telegram Web o Telegram Desktop. |
+| Ya no me llegan avisos | Si bloqueaste o detuviste el bot, la vinculación se quitó sola. Vuelve a vincularlo desde **Mi cuenta** (y desbloquea el bot si lo bloqueaste). |
+| Le escribí al bot y no me contesta lo que pregunté | El bot solo **envía** avisos; no lee mensajes. Para hablar con Moni, usa su número personal. |
+
+### 4.5 Descargar tu plan del mes
+En **Mi nutrición** presiona **Exportar mi plan** (en **Mi resumen** el botón se llama **Exportar plan**):
+- **Descargar PDF / Imprimir:** en la ventana de impresión elige **"Guardar como PDF"** como destino. Incluye
+  las 4 semanas del menú, las listas de compras, las recomendaciones y tu rutina.
+- **Descargar Excel (CSV):** una tabla con cada alimento de cada comida, por si quieres organizarte en Excel.
+
+### 4.6 Tener MoniFit en tu celular como una app
+- **iPhone (Safari):** abre https://moni-fit.com → botón **Compartir** (el cuadrito con flecha) → **Agregar a
+  pantalla de inicio** → **Agregar**.
+- **Android (Chrome):** abre https://moni-fit.com → menú **⋮** → **Agregar a la pantalla principal** → **Agregar**.
+
+Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 
 <p align="center"><img src="docs/capturas/28-portal-movil.png" alt="Portal del cliente en el celular" width="320"></p>
 
+### 4.7 Tu cuenta y tu contraseña
+- **Cambiar tu contraseña:** **Mi cuenta** → escribe la actual y la nueva dos veces → **Cambiar contraseña**.
+- **¿Olvidaste tu contraseña?** Pídele a Moni que te genere una nueva temporal; la app te pedirá cambiarla al entrar.
+- **Bloqueo:** si escribes mal la contraseña 5 veces seguidas, espera 15 minutos antes de intentarlo de nuevo.
+- **Salir:** en una computadora que no sea tuya, presiona siempre **Salir** al terminar.
+- **Tus datos:** solo tú y Moni pueden verlos. Para consultar, corregir o borrar tus datos, escribe a
+  **monica@moni-fit.com** (lo explica el aviso de privacidad, al pie de la pantalla de inicio de sesión).
 
-¿Olvidaste tu contraseña? Pídele a Moni que te genere una nueva.
+### 4.8 Pequeño glosario
+| Término | Qué significa |
+|---|---|
+| **% de grasa** | Qué parte de tu peso es grasa. |
+| **% de músculo / masa muscular** | Qué parte de tu peso es músculo. |
+| **Grasa visceral** | Grasa alrededor de los órganos; mientras más baja, mejor. |
+| **Recomposición corporal** | Bajar grasa y subir músculo al mismo tiempo, aunque la báscula casi no cambie. |
+| **Adherencia** | Qué tanto seguiste el plan (en %). |
+| **kcal** | Kilocalorías: la energía de los alimentos. |
+| **P · C · G** | Proteína, carbohidratos y grasas, en gramos. |
 
 ---
 
@@ -537,6 +672,13 @@ Sí, pero se quitará también del historial de los clientes que la tuvieron asi
 variante, usa **Duplicar**.
 
 ---
+
+**¿Cómo comparto la guía con mis clientes?**
+El repositorio es privado: copia la [sección 4](#4-guía-para-los-clientes) en un mensaje o documento, o imprímela
+como PDF. Usa también el [mensaje sugerido de bienvenida](#32-darle-acceso-a-la-app) al darles acceso.
+
+**El recordatorio de los domingos, ¿se puede cambiar de hora?**
+Sí, pero es un ajuste técnico (el timer `monifit-recordatorio` del servidor). Pídeselo a quien administra el servidor.
 
 **Un cliente dice que no le llegan los avisos de Telegram.**
 Revisa en *Avisos → Clientes con acceso* que tenga Telegram vinculado y en el **Historial** si hubo errores. Si
