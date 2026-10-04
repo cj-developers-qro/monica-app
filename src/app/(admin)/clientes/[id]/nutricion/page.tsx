@@ -112,7 +112,7 @@ function FormularioGenerar({ cliente, fechaInicio, hayPlanes }: { cliente: Clien
         </label>
         <label>
           <span className="etiqueta">Ajuste manual (kcal)</span>
-          <input type="number" name="ajuste_kcal" step={50} placeholder="0" className="campo" />
+          <input type="number" name="ajuste_kcal" step={1} placeholder="0" className="campo" />
         </label>
         <label>
           <span className="etiqueta">Excluir además</span>

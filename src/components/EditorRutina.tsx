@@ -211,7 +211,7 @@ export function EditorRutina({
                             <input value={f.repeticiones} onChange={(ev) => actualizar(f.clave, { repeticiones: ev.target.value })} />
                           </MiniCampo>
                           <MiniCampo etiqueta="Desc. (s)" ancho="w-16">
-                            <input type="number" min={0} max={600} step={15} value={f.descanso_seg} onChange={(ev) => actualizar(f.clave, { descanso_seg: Number(ev.target.value) })} />
+                            <input type="number" min={0} max={600} step={1} value={f.descanso_seg} onChange={(ev) => actualizar(f.clave, { descanso_seg: Number(ev.target.value) })} />
                           </MiniCampo>
                           <div className="flex flex-col">
                             <button type="button" disabled={i === 0} onClick={() => mover(f.clave, -1)} className="px-1 text-slate-400 hover:text-slate-800 disabled:opacity-30" aria-label="Subir">

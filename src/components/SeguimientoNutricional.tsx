@@ -46,7 +46,7 @@ export function SeguimientoNutricional({
                 </label>
                 <label>
                   <span className="etiqueta">Adherencia al plan (%) *</span>
-                  <input type="number" name="adherencia" min={0} max={100} step={5} required className="campo" />
+                  <input type="number" name="adherencia" min={0} max={100} step={1} required className="campo" />
                 </label>
                 <label>
                   <span className="etiqueta">Agua promedio (L)</span>

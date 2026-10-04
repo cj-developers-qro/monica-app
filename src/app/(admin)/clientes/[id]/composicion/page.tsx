@@ -43,7 +43,7 @@ export default async function ComposicionCorporal({ params }: PageProps<"/client
             </label>
             <label>
               <span className="etiqueta">Grasa visceral (nivel)</span>
-              <input type="number" step="0.5" name="grasa_visceral" className="campo" />
+              <input type="number" step="0.1" name="grasa_visceral" className="campo" />
             </label>
           </div>
           <label className="mt-3 block">
