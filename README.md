@@ -881,7 +881,7 @@ ssh -i ~/Downloads/ssh-key-monifit.key ubuntu@<IP-del-servidor>
    sudo bash instalar-servidor.sh
    ```
 3. La primera vez se detiene y muestra una **clave pública** (empieza con `ssh-ed25519`): el servidor necesita
-   permiso para leer el repositorio privado. Cópiala y agrégala en GitHub:
+   permiso para descargar el código por SSH desde GitHub. Cópiala y agrégala en GitHub:
    *monica-app → Settings → Deploy keys → Add deploy key*, con el título `servidor Oracle` y **sin** marcar
    *Allow write access*.
 4. Vuelve a ejecutar `sudo bash instalar-servidor.sh`. Instala Node.js 24, descarga y compila la app y
