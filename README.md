@@ -132,7 +132,7 @@ Una sola vez, en este orden:
       su semana ([sección 3.11](#311-avisos-por-telegram), 5 minutos).
 - [ ] **Explorar a los clientes de demostración** (abajo), para ver cómo se ve todo con datos.
 - [ ] **Dar de alta a tu primer cliente real** con el cuestionario ([3.1](#31-dar-de-alta-a-un-cliente)).
-- [ ] **Darle acceso a la app** y enviarle su correo, su contraseña temporal y la
+- [ ] **Darle acceso a la app** y enviarle su correo, su contraseña temporal y el enlace a la
       [guía para clientes](#4-guía-para-los-clientes) ([3.2](#32-darle-acceso-a-la-app)).
 - [ ] **Registrar sus medidas y composición**, **asignarle rutina** y **generar su plan** ([3.3 a 3.8](#33-registrar-medidas-con-cinta-antropometría)).
 - [ ] Cuando ya no los necesites, **eliminar los clientes de demostración**.
@@ -227,7 +227,9 @@ Mientras un cliente no tenga acceso, su perfil muestra el aviso *"aún no puede 
 > 3. Contraseña temporal: *(la que te mostró la app)*. Te pedirá crear la tuya.
 >
 > Cada domingo registra en *Mi nutrición → Seguimiento semanal* cómo te fue. Si quieres recibir avisos en
-> Telegram, actívalos en *Mi cuenta*. Cualquier duda, aquí estoy. 💪
+> Telegram, actívalos en *Mi cuenta*. Aquí tienes la guía paso a paso:
+> https://github.com/cj-developers-qro/monica-app#4-guía-para-los-clientes
+> Cualquier duda, aquí estoy. 💪
 
 En esa misma sección puedes ver el **estado** del acceso (activo, con contraseña temporal o desactivado) y la
 fecha de su **último ingreso**.
@@ -498,9 +500,8 @@ bloquea el bot, la app lo desvincula sola. Abajo, el **Historial** muestra cada 
 
 *Esta sección está escrita para los clientes de Moni.*
 
-> **Moni:** este repositorio de GitHub es privado, así que tus clientes **no pueden abrir este enlace**. Para
-> compartirles la guía, copia esta sección (de 4.1 a 4.8) en un mensaje o documento, o imprímela como PDF
-> desde el navegador (*Imprimir → Guardar como PDF*).
+> **Moni:** esta guía es pública; tus clientes la pueden abrir sin crear ninguna cuenta. Compárteles este enlace:
+> **https://github.com/cj-developers-qro/monica-app#4-guía-para-los-clientes**
 
 > **Lo único que tú capturas** es tu contraseña (la primera vez), la aceptación del aviso de privacidad y,
 > **cada semana, tu seguimiento**. Todo lo demás (medidas, rutina y plan de nutrición) lo registra Moni.
@@ -674,8 +675,8 @@ variante, usa **Duplicar**.
 ---
 
 **¿Cómo comparto la guía con mis clientes?**
-El repositorio es privado: copia la [sección 4](#4-guía-para-los-clientes) en un mensaje o documento, o imprímela
-como PDF. Usa también el [mensaje sugerido de bienvenida](#32-darle-acceso-a-la-app) al darles acceso.
+Envíales el enlace **https://github.com/cj-developers-qro/monica-app#4-guía-para-los-clientes**: se abre sin
+crear ninguna cuenta. Inclúyelo en el [mensaje sugerido de bienvenida](#32-darle-acceso-a-la-app).
 
 **El recordatorio de los domingos, ¿se puede cambiar de hora?**
 Sí, pero es un ajuste técnico (el timer `monifit-recordatorio` del servidor). Pídeselo a quien administra el servidor.
