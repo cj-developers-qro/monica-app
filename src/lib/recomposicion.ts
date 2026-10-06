@@ -13,7 +13,7 @@ export type PuntoRecomposicion = {
   visceral: number | null;
 };
 
-export type Estado = "logrado" | "parcial" | "sin_progreso" | "sin_datos";
+export type Estado = "logrado" | "parcial" | "sin_progreso" | "punto_partida" | "sin_datos";
 
 export type Diagnostico = {
   estado: Estado;
@@ -24,6 +24,23 @@ export type Diagnostico = {
   deltaGrasa: number | null;
   deltaMusculo: number | null;
   semanas: number | null;
+  /** Solo en "punto_partida": la medición inicial y el rango sugerido para la siguiente. */
+  inicio?: PuntoRecomposicion;
+  siguienteMedicion?: { desde: string; hasta: string };
+};
+
+// Lo que se busca en la composición corporal según el objetivo (se muestra en el punto de partida).
+const META: Record<Objetivo, string> = {
+  perdida_grasa: "Lo que buscamos: que bajen los kilos de grasa sin perder músculo.",
+  ganancia_muscular: "Lo que buscamos: que suban los kilos de músculo con el menor aumento de grasa posible.",
+  recomposicion: "Lo que buscamos: que bajen los kilos de grasa y suban los de músculo, aunque el peso casi no cambie.",
+  rendimiento: "Lo que buscamos: conservar o aumentar el músculo mientras mejora tu rendimiento.",
+};
+
+const sumarDias = (fecha: string, dias: number) => {
+  const d = new Date(`${fecha}T12:00:00`);
+  d.setDate(d.getDate() + dias);
+  return d.toISOString().slice(0, 10);
 };
 
 const redondear = (n: number) => Math.round(n * 10) / 10;
@@ -45,17 +62,34 @@ const UMBRAL_KG = 0.3;
 
 export function diagnosticar(serie: PuntoRecomposicion[], objetivo: Objetivo): Diagnostico {
   const completos = serie.filter((p) => p.masaGrasa != null && p.masaMuscular != null);
-  const vacio: Diagnostico = {
-    estado: "sin_datos",
-    titulo: "Aún no hay datos suficientes",
-    detalle: "Registra al menos dos mediciones de composición corporal con % de grasa y % de músculo.",
-    alineadoConObjetivo: "",
-    deltaPeso: null,
-    deltaGrasa: null,
-    deltaMusculo: null,
-    semanas: null,
-  };
-  if (completos.length < 2) return vacio;
+  const sinCambios = { deltaPeso: null, deltaGrasa: null, deltaMusculo: null, semanas: null };
+
+  if (completos.length === 0) {
+    const soloPeso = serie.length;
+    return {
+      estado: "sin_datos",
+      titulo: "Falta la primera medición de composición",
+      detalle: soloPeso
+        ? `Hay ${soloPeso === 1 ? "un registro" : `${soloPeso} registros`} de peso, pero sin % de grasa ni % de músculo. Registra una medición con la báscula de bioimpedancia (peso, % de grasa y % de músculo) para ver el punto de partida.`
+        : "Registra una medición con la báscula de bioimpedancia (peso, % de grasa y % de músculo) para ver el punto de partida.",
+      alineadoConObjetivo: "",
+      ...sinCambios,
+    };
+  }
+
+  // Con una sola medición completa todavía no hay cambio que medir: se muestra el punto de partida.
+  if (completos.length === 1) {
+    const inicio = completos[0];
+    return {
+      estado: "punto_partida",
+      titulo: "Punto de partida registrado",
+      detalle: `${inicio.masaGrasa} kg de grasa y ${inicio.masaMuscular} kg de músculo, con ${inicio.peso} kg de peso. Con la siguiente medición verás el progreso.`,
+      alineadoConObjetivo: META[objetivo],
+      ...sinCambios,
+      inicio,
+      siguienteMedicion: { desde: sumarDias(inicio.fecha, 14), hasta: sumarDias(inicio.fecha, 28) },
+    };
+  }
 
   const inicio = completos[0];
   const fin = completos[completos.length - 1];

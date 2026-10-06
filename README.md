@@ -270,7 +270,19 @@ La tabla calcula el **IMC** y convierte los porcentajes a **kilos de grasa** y *
 
 ### 3.5 Ver el progreso (recomposición)
 
-Expediente → pestaña **Recomposición**. Necesita al menos **dos registros con % de grasa y % de músculo**.
+Expediente → pestaña **Recomposición**. Funciona desde la **primera medición** que incluya % de grasa y % de músculo:
+
+- **Con una medición: el punto de partida.** Muestra los kilos de grasa y de músculo con los que empieza el
+  cliente, qué se busca según su objetivo y **cuándo conviene la siguiente medición** (entre 2 y 4 semanas después).
+
+<p align="center"><img src="docs/capturas/35-punto-de-partida.png" alt="Punto de partida de la recomposición"></p>
+
+- **Con dos o más mediciones: el progreso.** Compara la primera con la última y muestra lo siguiente.
+
+> El peso que se captura en el cuestionario de alta **no cuenta** como medición de composición, porque no trae
+> % de grasa ni de músculo. Para tener el punto de partida desde el primer día, registra en *Composición
+> corporal* el peso **junto con** el % de grasa y el % de músculo que da la báscula.
+
 
 - **Recuadro de diagnóstico** (verde, ámbar o rojo), por ejemplo:
   - *Recomposición corporal lograda* — bajó grasa y subió músculo.
@@ -652,7 +664,9 @@ Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 ## 6. Preguntas frecuentes
 
 **¿Por qué no aparece el diagnóstico de recomposición?**
-Hacen falta al menos dos registros de composición con % de grasa **y** % de músculo.
+Hace falta al menos una medición en *Composición corporal* con % de grasa **y** % de músculo; el peso del
+cuestionario de alta no basta. Con una medición verás el **punto de partida**; con la segunda (2–4 semanas
+después), el diagnóstico completo y las gráficas.
 
 **¿Por qué no puedo generar el plan de nutrición?**
 El cliente necesita al menos un peso registrado en *Composición corporal*.

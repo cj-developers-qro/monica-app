@@ -5,10 +5,14 @@ import type { Composicion } from "@/lib/datos";
 import type { Objetivo } from "@/lib/objetivos";
 import { diagnosticar, serieRecomposicion, type Estado } from "@/lib/recomposicion";
 
+const fechaLarga = (f: string) => new Date(`${f}T12:00:00`).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
+const fechaCorta = (f: string) => new Date(`${f}T12:00:00`).toLocaleDateString("es-MX", { day: "numeric", month: "long" });
+
 const ESTILO_ESTADO: Record<Estado, { clase: string; icono: string; etiqueta: string }> = {
   logrado: { clase: "border-emerald-200 bg-emerald-50 text-emerald-900", icono: "✓", etiqueta: "Progreso positivo" },
   parcial: { clase: "border-amber-200 bg-amber-50 text-amber-900", icono: "!", etiqueta: "Progreso parcial" },
   sin_progreso: { clase: "border-red-200 bg-red-50 text-red-900", icono: "✕", etiqueta: "Sin progreso" },
+  punto_partida: { clase: "border-pink-200 bg-pink-50 text-pink-900", icono: "📍", etiqueta: "Punto de partida" },
   sin_datos: { clase: "border-slate-200 bg-white text-slate-800", icono: "…", etiqueta: "Sin datos" },
 };
 
@@ -47,7 +51,39 @@ export function VistaRecomposicion({
         )}
       </section>
 
-      {d.estado !== "sin_datos" && (
+      {d.estado === "punto_partida" && d.inicio && (
+        <>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <Medida titulo="Peso" valor={`${d.inicio.peso} kg`} />
+            <Medida titulo="Masa grasa" valor={`${d.inicio.masaGrasa} kg`} detalle={`${d.inicio.grasaPct} % de grasa`} />
+            <Medida titulo="Masa muscular" valor={`${d.inicio.masaMuscular} kg`} detalle={`${d.inicio.musculoPct} % de músculo`} />
+            <Medida titulo="Grasa visceral" valor={d.inicio.visceral != null ? String(d.inicio.visceral) : "—"} detalle="nivel" />
+          </div>
+          {d.siguienteMedicion && (
+            <section className="tarjeta flex flex-wrap items-center justify-between gap-4 p-5">
+              <div className="text-sm text-slate-700">
+                <p>
+                  Medición del <strong>{fechaLarga(d.inicio.fecha)}</strong>. Siguiente medición sugerida:{" "}
+                  <strong>
+                    entre el {fechaCorta(d.siguienteMedicion.desde)} y el {fechaLarga(d.siguienteMedicion.hasta)}
+                  </strong>
+                  .
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Para comparar bien: misma báscula, en ayunas y a la misma hora. Con esa medición aparecerán el diagnóstico y las gráficas.
+                </p>
+              </div>
+              {enlaceRegistro && (
+                <Link href={enlaceRegistro} className="boton-secundario">
+                  Registrar nueva medición
+                </Link>
+              )}
+            </section>
+          )}
+        </>
+      )}
+
+      {d.estado !== "sin_datos" && d.estado !== "punto_partida" && (
         <div className="grid gap-4 sm:grid-cols-3">
           <Delta titulo="Cambio de peso" valor={d.deltaPeso} bueno={null} />
           <Delta titulo="Cambio de masa grasa" valor={d.deltaGrasa} bueno="baja" />
@@ -55,7 +91,7 @@ export function VistaRecomposicion({
         </div>
       )}
 
-      {serie.length > 1 && (
+      {serie.length > 1 && d.estado !== "punto_partida" && (
         <>
           <section className="tarjeta p-5">
             <GraficaLineas
@@ -106,6 +142,16 @@ function Delta({ titulo, valor, bueno }: { titulo: string; valor: number | null;
           {favorable ? "✓ A favor del objetivo" : "▲ En contra del objetivo"}
         </p>
       )}
+    </div>
+  );
+}
+
+function Medida({ titulo, valor, detalle }: { titulo: string; valor: string; detalle?: string }) {
+  return (
+    <div className="tarjeta p-5">
+      <p className="text-xs text-slate-500">{titulo}</p>
+      <p className="mt-1 text-3xl font-bold tabular-nums text-slate-900">{valor}</p>
+      {detalle && <p className="mt-1 text-xs text-slate-500">{detalle}</p>}
     </div>
   );
 }

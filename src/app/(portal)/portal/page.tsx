@@ -48,8 +48,22 @@ export default async function MiResumen() {
         <Dato titulo="% de músculo" valor={musculo ? `${musculo.musculo_pct} %` : "—"} detalle={musculo ? fechaLarga(musculo.fecha) : undefined} />
         <Dato
           titulo="Tu progreso"
-          valor={d.estado === "sin_datos" ? "En espera" : d.estado === "logrado" ? "✓ Vas muy bien" : d.estado === "parcial" ? "Avance parcial" : "A reforzar"}
-          detalle={d.estado === "sin_datos" ? "Se calcula con 2 mediciones" : d.titulo}
+          valor={
+            {
+              sin_datos: "En espera",
+              punto_partida: "📍 Punto de partida",
+              logrado: "✓ Vas muy bien",
+              parcial: "Avance parcial",
+              sin_progreso: "A reforzar",
+            }[d.estado]
+          }
+          detalle={
+            d.estado === "sin_datos"
+              ? "Falta tu primera medición de composición"
+              : d.estado === "punto_partida"
+                ? "Tu progreso se verá en la siguiente medición"
+                : d.titulo
+          }
         />
       </section>
 
