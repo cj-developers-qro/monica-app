@@ -17,6 +17,10 @@ export default function LayoutAcceso({ children }: LayoutProps<"/">) {
         Tus datos de salud son privados: solo tú y Moni pueden verlos ·{" "}
         <Link href="/privacidad" className="underline hover:text-pink-700">
           Aviso de privacidad
+        </Link>{" "}
+        ·{" "}
+        <Link href="/ayuda" className="underline hover:text-pink-700">
+          Ayuda
         </Link>
       </p>
     </div>

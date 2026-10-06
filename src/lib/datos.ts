@@ -57,6 +57,7 @@ export type Ejercicio = {
   musculos_principales: string[];
   musculos_secundarios: string[];
   descripcion: string;
+  video_url: string | null;
 };
 
 export type Rutina = {
@@ -200,7 +201,7 @@ function itemsDeRutinas(ids: number[]): Map<number, ItemRutina[]> {
     .prepare(
       `SELECT re.id, re.rutina_id, re.ejercicio_id, re.dia, re.orden, re.series, re.repeticiones, re.descanso_seg, re.notas,
               e.id AS e_id, e.nombre AS e_nombre, e.tipo AS e_tipo, e.equipo AS e_equipo,
-              e.musculos_principales AS e_mp, e.musculos_secundarios AS e_ms, e.descripcion AS e_descripcion
+              e.musculos_principales AS e_mp, e.musculos_secundarios AS e_ms, e.descripcion AS e_descripcion, e.video_url AS e_video
        FROM rutina_ejercicios re JOIN ejercicios e ON e.id = re.ejercicio_id
        WHERE re.rutina_id IN (${ids.map(() => "?").join(",")})
        ORDER BY re.rutina_id, re.orden`,
@@ -218,7 +219,7 @@ function itemsDeRutinas(ids: number[]): Map<number, ItemRutina[]> {
       notas: String(f.notas),
       ejercicio: aEjercicio({
         id: f.e_id, nombre: f.e_nombre, tipo: f.e_tipo, equipo: f.e_equipo,
-        musculos_principales: f.e_mp, musculos_secundarios: f.e_ms, descripcion: f.e_descripcion,
+        musculos_principales: f.e_mp, musculos_secundarios: f.e_ms, descripcion: f.e_descripcion, video_url: f.e_video,
       }),
     });
   }
@@ -385,4 +386,201 @@ export async function listarAvisos(limite = 30): Promise<RegistroAviso[]> {
        FROM notificaciones n LEFT JOIN usuarios u ON u.id = n.usuario_id ORDER BY n.id DESC LIMIT ?`,
     )
     .all(limite) as RegistroAviso[];
+}
+
+// --- Bitácora de entrenamiento ---------------------------------------------------------
+
+export type EjercicioSesion = {
+  ejercicio_id: number | null;
+  ejercicio_nombre: string;
+  completado: number;
+  series: number | null;
+  repeticiones: number | null;
+  peso_kg: number | null;
+};
+
+export type SesionEntrenamiento = {
+  id: number;
+  dia: string;
+  rutina_nombre: string;
+  fecha: string;
+  esfuerzo: number | null;
+  notas: string | null;
+  registrado_por_rol: string | null;
+  ejercicios: EjercicioSesion[];
+};
+
+/** Sesiones registradas por el cliente, de la más reciente a la más antigua. */
+export async function listarSesiones(clienteId: number, limite = 40): Promise<SesionEntrenamiento[]> {
+  await connection();
+  await requerirAccesoCliente(clienteId);
+  const sesiones = db()
+    .prepare(
+      `SELECT s.id, s.dia, s.rutina_nombre, s.fecha, s.esfuerzo, s.notas, u.rol AS registrado_por_rol
+       FROM sesiones_entrenamiento s LEFT JOIN usuarios u ON u.id = s.registrado_por
+       WHERE s.cliente_id = ? ORDER BY s.fecha DESC, s.id DESC LIMIT ?`,
+    )
+    .all(clienteId, limite) as Omit<SesionEntrenamiento, "ejercicios">[];
+  if (sesiones.length === 0) return [];
+  const ejercicios = db()
+    .prepare(
+      `SELECT sesion_id, ejercicio_id, ejercicio_nombre, completado, series, repeticiones, peso_kg
+       FROM sesion_ejercicios WHERE sesion_id IN (${sesiones.map(() => "?").join(",")}) ORDER BY sesion_id, orden`,
+    )
+    .all(...sesiones.map((s) => s.id)) as (EjercicioSesion & { sesion_id: number })[];
+  return sesiones.map((s) => ({ ...s, ejercicios: ejercicios.filter((e) => e.sesion_id === s.id) }));
+}
+
+export type MarcaEjercicio = {
+  ejercicio_id: number;
+  ejercicio_nombre: string;
+  sesiones: number;
+  ultima_fecha: string;
+  ultimo_series: number | null;
+  ultimo_reps: number | null;
+  ultimo_peso: number | null;
+  primer_peso: number | null;
+  mejor_peso: number | null;
+};
+
+/** Por ejercicio: lo último que se registró, la primera y la mejor carga (solo series completadas). */
+export async function marcasPorEjercicio(clienteId: number): Promise<MarcaEjercicio[]> {
+  await connection();
+  await requerirAccesoCliente(clienteId);
+  return db()
+    .prepare(
+      `WITH registros AS (
+         SELECT e.ejercicio_id, e.ejercicio_nombre, e.series, e.repeticiones, e.peso_kg, s.fecha, s.id AS sesion_id,
+                ROW_NUMBER() OVER (PARTITION BY e.ejercicio_id ORDER BY s.fecha DESC, s.id DESC) AS reciente,
+                ROW_NUMBER() OVER (PARTITION BY e.ejercicio_id ORDER BY s.fecha ASC, s.id ASC) AS antiguo
+         FROM sesion_ejercicios e JOIN sesiones_entrenamiento s ON s.id = e.sesion_id
+         WHERE s.cliente_id = ? AND e.completado = 1 AND e.ejercicio_id IS NOT NULL
+       )
+       SELECT ejercicio_id,
+              MAX(CASE WHEN reciente = 1 THEN ejercicio_nombre END) AS ejercicio_nombre,
+              COUNT(*) AS sesiones,
+              MAX(fecha) AS ultima_fecha,
+              MAX(CASE WHEN reciente = 1 THEN series END) AS ultimo_series,
+              MAX(CASE WHEN reciente = 1 THEN repeticiones END) AS ultimo_reps,
+              MAX(CASE WHEN reciente = 1 THEN peso_kg END) AS ultimo_peso,
+              MAX(CASE WHEN antiguo = 1 THEN peso_kg END) AS primer_peso,
+              MAX(peso_kg) AS mejor_peso
+       FROM registros GROUP BY ejercicio_id ORDER BY ejercicio_nombre`,
+    )
+    .all(clienteId) as MarcaEjercicio[];
+}
+
+// --- Panel "Hoy" de la administradora -----------------------------------------------------
+
+export type PendienteCliente = { cliente_id: number; nombre: string; detalle: string | null };
+export type ActividadReciente = { cliente_id: number; nombre: string; tipo: "seguimiento" | "sesion"; fecha: string; detalle: string };
+
+export type PanelHoy = {
+  resumen: { clientes: number; sesionesSemana: number; seguimientosSemana: number; adherenciaPromedio: number | null };
+  seguimientoPendiente: PendienteCliente[];
+  medicionPendiente: PendienteCliente[];
+  sinPlan: PendienteCliente[];
+  planPorVencer: PendienteCliente[];
+  sinRutina: PendienteCliente[];
+  adherenciaBaja: PendienteCliente[];
+  sinEntrenar: PendienteCliente[];
+  accesoPendiente: PendienteCliente[];
+  actividad: ActividadReciente[];
+};
+
+// Clientes que se atienden: sin acceso a la app o con acceso activo (excluye las bajas temporales).
+const ACTIVOS = `WITH activos AS (
+  SELECT c.id, c.nombre FROM clientes c LEFT JOIN usuarios u ON u.cliente_id = c.id
+  WHERE u.id IS NULL OR u.activo = 1
+), hoy AS (SELECT date('now', 'localtime') AS d)`;
+const VIGENTE = `EXISTS (SELECT 1 FROM planes_nutricion p, hoy WHERE p.cliente_id = a.id AND p.fecha_inicio <= hoy.d AND p.fecha_fin >= hoy.d)`;
+
+/** Pendientes y actividad reciente para la pantalla "Hoy". Solo la administradora. */
+export async function panelHoy(): Promise<PanelHoy> {
+  await connection();
+  await requerirAdmin();
+  const lista = (sql: string) => db().prepare(`${ACTIVOS} ${sql}`).all() as PendienteCliente[];
+
+  const resumen = db()
+    .prepare(
+      `${ACTIVOS} SELECT
+         (SELECT COUNT(*) FROM activos) AS clientes,
+         (SELECT COUNT(*) FROM sesiones_entrenamiento, hoy WHERE fecha >= date(hoy.d, '-6 days')) AS sesionesSemana,
+         (SELECT COUNT(*) FROM seguimiento_nutricion, hoy WHERE fecha >= date(hoy.d, '-6 days')) AS seguimientosSemana,
+         (SELECT ROUND(AVG(adherencia)) FROM seguimiento_nutricion, hoy WHERE fecha >= date(hoy.d, '-27 days')) AS adherenciaPromedio`,
+    )
+    .get() as PanelHoy["resumen"];
+
+  return {
+    resumen,
+    seguimientoPendiente: lista(
+      `SELECT a.id AS cliente_id, a.nombre,
+         (SELECT 'Último registro: ' || MAX(s.fecha) FROM seguimiento_nutricion s WHERE s.cliente_id = a.id) AS detalle
+       FROM activos a, hoy WHERE ${VIGENTE}
+         AND NOT EXISTS (SELECT 1 FROM seguimiento_nutricion s WHERE s.cliente_id = a.id AND s.fecha >= date(hoy.d, '-6 days'))
+       ORDER BY a.nombre`,
+    ),
+    medicionPendiente: lista(
+      `SELECT a.id AS cliente_id, a.nombre,
+         CASE WHEN m.ultima IS NULL THEN 'Sin medición de composición'
+              ELSE 'Última medición hace ' || CAST(julianday(hoy.d) - julianday(m.ultima) AS INTEGER) || ' días' END AS detalle
+       FROM activos a CROSS JOIN hoy
+       LEFT JOIN (SELECT cliente_id, MAX(fecha) AS ultima FROM composicion WHERE grasa_pct IS NOT NULL GROUP BY cliente_id) m ON m.cliente_id = a.id
+       WHERE m.ultima IS NULL OR m.ultima < date(hoy.d, '-28 days')
+       ORDER BY m.ultima IS NOT NULL, m.ultima, a.nombre`,
+    ),
+    sinPlan: lista(
+      `SELECT a.id AS cliente_id, a.nombre,
+         (SELECT 'Su último plan terminó el ' || MAX(p.fecha_fin) FROM planes_nutricion p WHERE p.cliente_id = a.id) AS detalle
+       FROM activos a, hoy WHERE NOT ${VIGENTE}
+         AND NOT EXISTS (SELECT 1 FROM planes_nutricion p WHERE p.cliente_id = a.id AND p.fecha_inicio > hoy.d)
+       ORDER BY a.nombre`,
+    ),
+    planPorVencer: lista(
+      `SELECT a.id AS cliente_id, a.nombre, 'Termina el ' || p.fecha_fin AS detalle
+       FROM activos a CROSS JOIN hoy JOIN planes_nutricion p ON p.cliente_id = a.id
+       WHERE p.fecha_inicio <= hoy.d AND p.fecha_fin >= hoy.d AND p.fecha_fin <= date(hoy.d, '+5 days')
+         AND NOT EXISTS (SELECT 1 FROM planes_nutricion q WHERE q.cliente_id = a.id AND q.fecha_inicio > p.fecha_fin)
+       ORDER BY p.fecha_fin`,
+    ),
+    sinRutina: lista(
+      `SELECT a.id AS cliente_id, a.nombre, NULL AS detalle FROM activos a
+       WHERE NOT EXISTS (SELECT 1 FROM asignaciones s WHERE s.cliente_id = a.id AND s.activa = 1) ORDER BY a.nombre`,
+    ),
+    adherenciaBaja: lista(
+      `SELECT a.id AS cliente_id, a.nombre, 'Última semana: ' || s.adherencia || ' %' AS detalle
+       FROM activos a CROSS JOIN hoy JOIN seguimiento_nutricion s ON s.cliente_id = a.id
+       WHERE s.id = (SELECT id FROM seguimiento_nutricion WHERE cliente_id = a.id ORDER BY fecha DESC, id DESC LIMIT 1)
+         AND s.fecha >= date(hoy.d, '-20 days') AND s.adherencia < 60
+       ORDER BY s.adherencia`,
+    ),
+    sinEntrenar: lista(
+      `SELECT a.id AS cliente_id, a.nombre,
+         'Última sesión hace ' || CAST(julianday(hoy.d) - julianday(MAX(e.fecha)) AS INTEGER) || ' días' AS detalle
+       FROM activos a CROSS JOIN hoy JOIN sesiones_entrenamiento e ON e.cliente_id = a.id
+       GROUP BY a.id HAVING MAX(e.fecha) < date(hoy.d, '-7 days') ORDER BY MAX(e.fecha)`,
+    ),
+    accesoPendiente: lista(
+      `SELECT a.id AS cliente_id, a.nombre,
+         CASE WHEN u.id IS NULL THEN 'Sin acceso a la app'
+              WHEN u.debe_cambiar = 1 THEN 'Aún no entra por primera vez'
+              ELSE 'No ha aceptado el aviso de privacidad' END AS detalle
+       FROM activos a LEFT JOIN usuarios u ON u.cliente_id = a.id
+       WHERE u.id IS NULL OR u.debe_cambiar = 1 OR u.acepto_privacidad IS NULL ORDER BY a.nombre`,
+    ),
+    actividad: db()
+      .prepare(
+        `${ACTIVOS}
+         SELECT * FROM (
+           SELECT a.id AS cliente_id, a.nombre, 'seguimiento' AS tipo, s.fecha, 'Registró su semana: ' || s.adherencia || ' % de adherencia' AS detalle, s.id AS orden
+           FROM seguimiento_nutricion s JOIN activos a ON a.id = s.cliente_id, hoy WHERE s.fecha >= date(hoy.d, '-6 days')
+           UNION ALL
+           SELECT a.id, a.nombre, 'sesion', e.fecha,
+             'Entrenó ' || e.dia || ' (' || (SELECT SUM(completado) FROM sesion_ejercicios WHERE sesion_id = e.id) || '/' ||
+             (SELECT COUNT(*) FROM sesion_ejercicios WHERE sesion_id = e.id) || ' ejercicios)', e.id
+           FROM sesiones_entrenamiento e JOIN activos a ON a.id = e.cliente_id, hoy WHERE e.fecha >= date(hoy.d, '-6 days')
+         ) ORDER BY fecha DESC, orden DESC LIMIT 15`,
+      )
+      .all() as ActividadReciente[],
+  };
 }

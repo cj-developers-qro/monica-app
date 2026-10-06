@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { esMusculo } from "@/lib/musculos";
 import { TIPOS_EJERCICIO } from "@/lib/objetivos";
 import { texto, type EstadoFormulario } from "@/lib/formulario";
+import { normalizarVideo } from "@/lib/videos";
 
 export async function guardarEjercicio(id: number | null, _: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
   await requerirAdmin();
@@ -17,17 +18,19 @@ export async function guardarEjercicio(id: number | null, _: EstadoFormulario, f
   if (!nombre) return { error: "El nombre del ejercicio es obligatorio." };
   if (!(tipo in TIPOS_EJERCICIO)) return { error: "Selecciona el tipo de ejercicio." };
   if (principales.length === 0) return { error: "Marca al menos un músculo principal." };
+  const video = normalizarVideo(texto(fd, "video_url"));
+  if ("error" in video) return { error: video.error };
 
-  const valores = [nombre, tipo, texto(fd, "equipo"), JSON.stringify(principales), JSON.stringify(secundarios), texto(fd, "descripcion")];
+  const valores = [nombre, tipo, texto(fd, "equipo"), JSON.stringify(principales), JSON.stringify(secundarios), texto(fd, "descripcion"), video.url];
   if (id) {
     db().prepare(
-      `UPDATE ejercicios SET nombre = ?, tipo = ?, equipo = ?, musculos_principales = ?, musculos_secundarios = ?, descripcion = ?
-       WHERE id = ?`,
+      `UPDATE ejercicios SET nombre = ?, tipo = ?, equipo = ?, musculos_principales = ?, musculos_secundarios = ?, descripcion = ?,
+         video_url = ? WHERE id = ?`,
     ).run(...valores, id);
   } else {
     db().prepare(
-      `INSERT INTO ejercicios (nombre, tipo, equipo, musculos_principales, musculos_secundarios, descripcion)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO ejercicios (nombre, tipo, equipo, musculos_principales, musculos_secundarios, descripcion, video_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
     ).run(...valores);
   }
   revalidatePath("/", "layout");

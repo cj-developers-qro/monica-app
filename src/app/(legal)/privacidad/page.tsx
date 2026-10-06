@@ -137,7 +137,7 @@ export default async function AvisoPrivacidad() {
         </Formulario>
       ) : (
         <p className="mt-8 text-center">
-          <Link href={usuario ? (usuario.rol === "admin" ? "/" : "/portal") : "/login"} className="enlace">
+          <Link href={usuario ? (usuario.rol === "admin" ? "/hoy" : "/portal") : "/login"} className="enlace">
             ← Volver
           </Link>
         </p>

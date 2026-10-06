@@ -1,5 +1,6 @@
 import { agruparPorDia, type ItemRutina } from "@/lib/datos";
 import { nombreMusculo } from "@/lib/musculos";
+import { enlaceVideo } from "@/lib/videos";
 
 const descanso = (s: number) => (s === 0 ? "—" : s % 60 === 0 ? `${s / 60} min` : s > 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} min` : `${s} s`);
 
@@ -25,6 +26,14 @@ export function DetalleRutina({ items }: { items: ItemRutina[] }) {
                   <tr key={i.id} className="border-t border-slate-100 align-top">
                     <td className="px-4 py-2">
                       <p className="font-medium text-slate-800">{i.ejercicio.nombre}</p>
+                      <a
+                        href={enlaceVideo(i.ejercicio).url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-pink-700 hover:underline print:hidden"
+                      >
+                        ▶ {enlaceVideo(i.ejercicio).propio ? "Ver video" : "Ver cómo se hace"}
+                      </a>
                       <p className="text-xs text-slate-500">
                         {i.ejercicio.musculos_principales.map(nombreMusculo).join(", ")}
                         {i.notas && <span className="text-slate-600"> · {i.notas}</span>}

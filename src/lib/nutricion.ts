@@ -6,7 +6,14 @@ import type { Objetivo } from "./objetivos";
 
 export type Macros = { kcal: number; p: number; c: number; g: number };
 
-export type ItemComida = { clave: string; nombre: string; gramos: number; medida: string | null } & Macros;
+export type ItemComida = {
+  clave: string;
+  nombre: string;
+  gramos: number;
+  medida: string | null;
+  /** Si el alimento se cambió con el intercambio: el nombre del que venía originalmente en el plan. */
+  en_lugar_de?: string;
+} & Macros;
 export type Comida = { nombre: string; items: ItemComida[]; total: Macros };
 export type DiaPlan = { fecha: string; entreno: boolean; comidas: Comida[]; total: Macros };
 export type SemanaPlan = { numero: number; enfoque: string; dias: DiaPlan[]; compras: { nombre: string; gramos: number; medida: string | null }[] };
@@ -32,6 +39,8 @@ export type PlanNutricional = {
   restricciones: string[];
   recomendaciones: string[];
   semanas: SemanaPlan[];
+  /** Alimentos excluidos a mano al generar el plan (se respetan también en los intercambios). */
+  excluir?: string;
 };
 
 export type EntradaPlan = {
@@ -151,9 +160,26 @@ function medida(a: Alimento, gramos: number) {
   if (!a.unidad) return null;
   const n = gramos / a.unidad.gramos;
   if (a.unidad.gramos < 5) return `≈ ${Math.round(n)} ${a.unidad.nombre}s`;
-  const texto = n >= 0.9 && n <= 1.1 ? "1" : n < 1 ? (n >= 0.4 ? "½" : "¼") : String(Math.round(n * 2) / 2).replace(".5", "½");
-  const plural = n > 1.1 && !a.unidad.nombre.includes(" ") ? `${a.unidad.nombre}s` : a.unidad.nombre;
+  // El plural se decide con el número que se muestra (1.17 se muestra como "1" → singular).
+  const mostrado = n >= 0.9 && n <= 1.1 ? 1 : n < 1 ? n : Math.round(n * 2) / 2;
+  const texto = mostrado === 1 ? "1" : n < 1 ? (n >= 0.4 ? "½" : "¼") : String(mostrado).replace(".5", "½");
+  // "taza" → "tazas"; "pieza chica" → "piezas chicas"; "lata drenada" → "latas drenadas".
+  const plural =
+    mostrado > 1
+      ? a.unidad.nombre.includes(" ")
+        ? a.unidad.nombre.split(" ").map((w) => (/[aeiou]$/.test(w) ? `${w}s` : w)).join(" ")
+        : `${a.unidad.nombre}s`
+      : a.unidad.nombre;
   return `${texto.replace(/^(\d)½$/, "$1 ½")} ${plural}`;
+}
+
+/**
+ * Medida casera de un alimento del plan, calculada al mostrarla (así los planes guardados antes de
+ * una mejora en el texto, como el plural, también se ven corregidos).
+ */
+export function medidaCasera(clave: string, gramos: number): string | null {
+  const a = ALIMENTOS.find((x) => x.clave === clave);
+  return a ? medida(a, gramos) : null;
 }
 
 function item(a: Alimento, gramos: number): ItemComida {
@@ -213,6 +239,20 @@ function compensar(comidas: Comida[], meta: number, macro: "p" | "c", categorias
     comida.items[i] = item(a, nuevos);
     comida.total = sumar(comida.items);
   }
+}
+
+/** Lista de compras de una semana: suma de cada alimento, ordenada por categoría. */
+function calcularCompras(dias: DiaPlan[]): SemanaPlan["compras"] {
+  const compras = new Map<string, { a: Alimento; gramos: number }>();
+  for (const dia of dias)
+    for (const comida of dia.comidas)
+      for (const i of comida.items) {
+        const previo = compras.get(i.clave);
+        compras.set(i.clave, { a: ALIMENTOS.find((a) => a.clave === i.clave)!, gramos: (previo?.gramos ?? 0) + i.gramos });
+      }
+  return [...compras.values()]
+    .sort((a, b) => a.a.categoria.localeCompare(b.a.categoria) || a.a.nombre.localeCompare(b.a.nombre))
+    .map(({ a, gramos }) => ({ nombre: a.nombre, gramos: redondear(gramos, 10), medida: medida(a, gramos) }));
 }
 
 export function generarPlan(e: EntradaPlan): PlanNutricional {
@@ -318,21 +358,7 @@ export function generarPlan(e: EntradaPlan): PlanNutricional {
       compensar(comidas, meta.c, "c", ["carbohidrato"]);
       diasSemana.push({ fecha, entreno, comidas, total: sumar(comidas.flatMap((c) => c.items)) });
     }
-    const compras = new Map<string, { a: Alimento; gramos: number }>();
-    for (const dia of diasSemana)
-      for (const comida of dia.comidas)
-        for (const i of comida.items) {
-          const previo = compras.get(i.clave);
-          compras.set(i.clave, { a: ALIMENTOS.find((a) => a.clave === i.clave)!, gramos: (previo?.gramos ?? 0) + i.gramos });
-        }
-    semanas.push({
-      numero: w + 1,
-      enfoque: ENFOQUES[w],
-      dias: diasSemana,
-      compras: [...compras.values()]
-        .sort((a, b) => a.a.categoria.localeCompare(b.a.categoria) || a.a.nombre.localeCompare(b.a.nombre))
-        .map(({ a, gramos }) => ({ nombre: a.nombre, gramos: redondear(gramos, 10), medida: medida(a, gramos) })),
-    });
+    semanas.push({ numero: w + 1, enfoque: ENFOQUES[w], dias: diasSemana, compras: calcularCompras(diasSemana) });
   }
 
   const agua = Math.round(((e.peso_kg * 35 + (diasEntreno.length * 500) / 7) / 1000) * 10) / 10;
@@ -352,6 +378,7 @@ export function generarPlan(e: EntradaPlan): PlanNutricional {
     restricciones,
     recomendaciones: recomendaciones(e, agua, p, cocinaPoco),
     semanas,
+    excluir: e.excluir,
   };
 }
 
@@ -434,4 +461,91 @@ export function ajusteAdaptativo(objetivo: Objetivo, pesos: { fecha: string; pes
   if (ritmo < regla.min) return { kcal: regla.bajo[0], motivo: regla.bajo[1] };
   if (ritmo > regla.max) return { kcal: regla.alto[0], motivo: regla.alto[1] };
   return { kcal: 0, motivo: `El peso ${cambio} por semana, dentro de lo esperado para el objetivo: se mantienen las calorías.` };
+}
+
+// --- Intercambio de alimentos ---------------------------------------------------------------
+
+/** Nutriente que define la porción equivalente según la categoría (null = misma cantidad). */
+const PAPEL: Record<Alimento["categoria"], "p" | "c" | "g" | null> = {
+  proteina: "p", lacteo: "p", carbohidrato: "c", fruta: "c", grasa: "g", verdura: null,
+};
+
+const momentoDeComida = (nombre: string): Momento =>
+  nombre === "Desayuno" ? "desayuno" : nombre === "Comida" ? "comida" : nombre === "Cena" ? "cena" : "colacion";
+
+/** Porción del alimento nuevo que aporta lo mismo del nutriente principal que el original. */
+function equivalente(original: ItemComida, nuevo: Alimento): ItemComida {
+  const papel = PAPEL[nuevo.categoria];
+  const [, max] = LIMITE_ALIMENTO[nuevo.clave] ?? LIMITES[nuevo.categoria];
+  let gramos = papel && nuevo[papel] > 0 && original[papel] > 0 ? (original[papel] / nuevo[papel]) * 100 : original.gramos;
+  gramos = Math.min(max, Math.max(5, gramos));
+  gramos =
+    nuevo.unidad && ["huevo", "tortilla_maiz", "pan_integral"].includes(nuevo.clave)
+      ? Math.max(1, Math.round(gramos / nuevo.unidad.gramos)) * nuevo.unidad.gramos
+      : redondear(gramos, nuevo.categoria === "grasa" && gramos < 30 ? 1 : 5);
+  const nombreOriginal = original.en_lugar_de ?? original.nombre;
+  const resultado = item(nuevo, gramos);
+  return nombreOriginal === nuevo.nombre ? resultado : { ...resultado, en_lugar_de: nombreOriginal };
+}
+
+export type Ubicacion = { semana: number; dia: number; comida: number; item: number };
+
+function ubicar(plan: PlanNutricional, u: Ubicacion) {
+  const semana = plan.semanas[u.semana];
+  const dia = semana?.dias[u.dia];
+  const comida = dia?.comidas[u.comida];
+  const actual = comida?.items[u.item];
+  return semana && dia && comida && actual ? { semana, dia, comida, actual } : null;
+}
+
+/**
+ * Alimentos que pueden sustituir al elegido: misma categoría, permitidos para el cliente (alergias,
+ * aversiones y exclusiones del plan); primero los que encajan en ese momento del día.
+ */
+export function opcionesIntercambio(plan: PlanNutricional, onboarding: Record<string, string>, u: Ubicacion) {
+  const lugar = ubicar(plan, u);
+  if (!lugar) return null;
+  const base = ALIMENTOS.find((a) => a.clave === lugar.actual.clave);
+  if (!base) return null;
+  const momento = momentoDeComida(lugar.comida.nombre);
+  const { permitidos } = filtrarAlimentos(onboarding, plan.excluir ?? "");
+  const opciones = permitidos
+    .filter((a) => a.categoria === base.categoria && a.clave !== base.clave)
+    .sort((a, b) => Number(b.momentos.includes(momento)) - Number(a.momentos.includes(momento)) || a.nombre.localeCompare(b.nombre))
+    .map((a) => ({ ...equivalente(lugar.actual, a), sugerido: a.momentos.includes(momento) }));
+  const vecesEnSemana = lugar.semana.dias.reduce((n, d) => n + d.comidas.reduce((m, c) => m + c.items.filter((i) => i.clave === base.clave).length, 0), 0);
+  return { ...lugar, categoria: base.categoria, opciones, vecesEnSemana };
+}
+
+/**
+ * Cambia un alimento por otro equivalente en una comida o en toda la semana. Recalcula los totales
+ * de las comidas, de los días y la lista de compras. Devuelve un mensaje si el cambio no es válido.
+ */
+export function aplicarIntercambio(
+  plan: PlanNutricional,
+  onboarding: Record<string, string>,
+  u: Ubicacion,
+  clave: string,
+  alcance: "comida" | "semana",
+): PlanNutricional | string {
+  const opciones = opcionesIntercambio(plan, onboarding, u);
+  if (!opciones) return "No se encontró ese alimento en el plan.";
+  const nuevo = ALIMENTOS.find((a) => a.clave === clave);
+  if (!nuevo || !opciones.opciones.some((o) => o.clave === clave)) return "Ese alimento no es un intercambio válido.";
+
+  const copia: PlanNutricional = structuredClone(plan);
+  const semana = copia.semanas[u.semana];
+  const original = opciones.actual.clave;
+  semana.dias.forEach((dia, di) =>
+    dia.comidas.forEach((comida, ci) => {
+      comida.items = comida.items.map((it, ii) => {
+        const esElElegido = di === u.dia && ci === u.comida && ii === u.item;
+        return (alcance === "semana" ? it.clave === original : esElElegido) ? equivalente(it, nuevo) : it;
+      });
+      comida.total = sumar(comida.items);
+    }),
+  );
+  for (const dia of semana.dias) dia.total = sumar(dia.comidas.flatMap((c) => c.items));
+  semana.compras = calcularCompras(semana.dias);
+  return copia;
 }

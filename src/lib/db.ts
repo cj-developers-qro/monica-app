@@ -65,6 +65,8 @@ const MIGRACIONES: { tabla: string; columna: string; definicion: string }[] = [
   // Chat de Telegram donde la persona recibe avisos (NULL = no vinculado) y desde cuándo.
   { tabla: "usuarios", columna: "telegram_chat_id", definicion: "TEXT" },
   { tabla: "usuarios", columna: "telegram_vinculado_en", definicion: "TEXT" },
+  // Enlace a un video del ejercicio (YouTube u otro); si está vacío se sugiere una búsqueda.
+  { tabla: "ejercicios", columna: "video_url", definicion: "TEXT" },
 ];
 
 function migrar(db: DatabaseSync) {

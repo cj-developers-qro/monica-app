@@ -49,6 +49,7 @@ export default async function CatalogoEjercicios({ searchParams }: PageProps<"/e
               <p className="mt-1 text-xs text-slate-600">{e.musculos_principales.map(nombreMusculo).join(", ")}</p>
               <p className="mt-auto pt-2 text-xs text-slate-400">
                 {e.usos ? `En ${e.usos} rutina${e.usos === 1 ? "" : "s"}` : "Sin usar"}
+                {e.video_url && <span className="insignia-marca ml-2">▶ Video</span>}
               </p>
             </Link>
           </li>

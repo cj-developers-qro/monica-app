@@ -61,7 +61,7 @@ export async function iniciarSesion(_estado: EstadoFormulario, fd: FormData): Pr
 
   db().prepare("UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL, ultimo_acceso = datetime('now') WHERE id = ?").run(u.id);
   await crearSesion(u.id);
-  redirect(u.debe_cambiar ? "/cuenta?primera=1" : u.rol === "admin" ? "/" : "/portal");
+  redirect(u.debe_cambiar ? "/cuenta?primera=1" : u.rol === "admin" ? "/hoy" : "/portal");
 }
 
 export async function cerrarSesion() {
@@ -84,7 +84,7 @@ export async function cambiarContrasena(_estado: EstadoFormulario, fd: FormData)
   // Cierra las demás sesiones abiertas con la contraseña anterior y abre una nueva en este equipo.
   db().prepare("DELETE FROM sesiones WHERE usuario_id = ?").run(u.id);
   await crearSesion(u.id);
-  if (u.debe_cambiar) redirect(u.rol === "admin" ? "/" : "/portal");
+  if (u.debe_cambiar) redirect(u.rol === "admin" ? "/hoy" : "/portal");
   return { ok: true, mensaje: "Tu contraseña se actualizó." };
 }
 
@@ -94,5 +94,5 @@ export async function aceptarPrivacidad(_estado: EstadoFormulario, fd: FormData)
   if (!u) redirect("/login");
   if (texto(fd, "acepto") !== "si") return { error: "Para continuar marca la casilla de aceptación." };
   db().prepare("UPDATE usuarios SET acepto_privacidad = datetime('now') WHERE id = ? AND acepto_privacidad IS NULL").run(u.id);
-  redirect(u.rol === "admin" ? "/" : "/portal");
+  redirect(u.rol === "admin" ? "/hoy" : "/portal");
 }

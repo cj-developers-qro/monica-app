@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { Macros, PlanNutricional } from "@/lib/nutricion";
+import { medidaCasera, type Macros, type PlanNutricional } from "@/lib/nutricion";
 
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 const fechaCorta = (f: string) => new Date(`${f}T12:00:00`).toLocaleDateString("es-MX", { day: "numeric", month: "short" });
@@ -21,12 +21,15 @@ export function VistaPlanNutricional({
   plan,
   numeroSemana,
   hrefSemana,
+  hrefIntercambio,
   notas,
   acciones,
 }: {
   plan: PlanNutricional;
   numeroSemana: number;
   hrefSemana: (n: number) => string;
+  /** Si se indica, cada alimento muestra el enlace "Cambiar" (intercambio por un equivalente). */
+  hrefIntercambio?: (u: { semana: number; dia: number; comida: number; item: number }) => string;
   notas?: string;
   acciones?: ReactNode;
 }) {
@@ -100,8 +103,8 @@ export function VistaPlanNutricional({
           <strong>Semana {semana.numero}:</strong> {semana.enfoque}
         </p>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {semana.dias.map((d) => (
-            <article key={d.fecha} className="tarjeta overflow-hidden break-inside-avoid">
+          {semana.dias.map((d, di) => (
+            <article key={d.fecha} id={`dia-${di}`} className="tarjeta scroll-mt-6 overflow-hidden break-inside-avoid">
               <header className="flex items-center justify-between gap-2 border-b border-pink-100 bg-pink-50/60 px-4 py-2">
                 <h4 className="text-sm font-semibold text-slate-800">
                   {diaSemana(d.fecha)} {fechaCorta(d.fecha)}
@@ -111,18 +114,30 @@ export function VistaPlanNutricional({
                 </span>
               </header>
               <div className="divide-y divide-slate-100">
-                {d.comidas.map((c) => (
+                {d.comidas.map((c, ci) => (
                   <div key={c.nombre} className="px-4 py-2.5">
                     <p className="flex items-baseline justify-between gap-2 text-xs">
                       <span className="font-semibold uppercase tracking-wide text-slate-500">{c.nombre}</span>
                       <span className="tabular-nums text-slate-500">{resumen(c.total)}</span>
                     </p>
                     <ul className="mt-1 space-y-0.5 text-sm text-slate-700">
-                      {c.items.map((i) => (
+                      {c.items.map((i, ii) => (
                         <li key={i.clave} className="flex justify-between gap-3">
-                          <span>{i.nombre}</span>
+                          <span>
+                            {i.nombre}
+                            {i.en_lugar_de && <span className="text-xs text-pink-700"> · en lugar de {i.en_lugar_de}</span>}
+                            {hrefIntercambio && (
+                              <Link
+                                href={hrefIntercambio({ semana: numeroSemana - 1, dia: di, comida: ci, item: ii })}
+                                className="ml-1.5 text-xs font-medium text-pink-700 hover:underline print:hidden"
+                                aria-label={`Cambiar ${i.nombre}`}
+                              >
+                                ⇄ Cambiar
+                              </Link>
+                            )}
+                          </span>
                           <span className="shrink-0 tabular-nums text-slate-500">
-                            {i.gramos} g{i.medida && <span className="text-slate-400"> · {i.medida}</span>}
+                            {i.gramos} g{medidaCasera(i.clave, i.gramos) && <span className="text-slate-400"> · {medidaCasera(i.clave, i.gramos)}</span>}
                           </span>
                         </li>
                       ))}

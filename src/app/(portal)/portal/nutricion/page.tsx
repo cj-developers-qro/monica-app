@@ -48,6 +48,7 @@ export default async function MiNutricion({ searchParams }: PageProps<"/portal/n
         plan={registro.plan}
         numeroSemana={numeroSemana}
         hrefSemana={(n) => `/portal/nutricion?plan=${registro.id}&semana=${n}`}
+        hrefIntercambio={(u) => `/portal/nutricion/intercambio?plan=${registro.id}&s=${u.semana}&d=${u.dia}&c=${u.comida}&i=${u.item}`}
         acciones={
           <Link href={`/exportar/${cliente_id}?plan=${registro.id}`} className="boton">
             Exportar mi plan

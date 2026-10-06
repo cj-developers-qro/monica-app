@@ -90,7 +90,7 @@ body {
 
 /* Enlaces del menú sobre la barra rosa */
 .menu-enlace {
-  @apply rounded-xl px-3 py-2 text-sm font-medium text-pink-50 transition hover:bg-white/15 hover:text-white aria-[current=page]:bg-white aria-[current=page]:text-pink-700 aria-[current=page]:shadow-sm;
+  @apply whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-pink-50 transition hover:bg-white/15 hover:text-white aria-[current=page]:bg-white aria-[current=page]:text-pink-700 aria-[current=page]:shadow-sm;
 }
 
 .insignia-marca {

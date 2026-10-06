@@ -58,6 +58,7 @@ export default async function Nutricion({ params, searchParams }: PageProps<"/cl
         plan={registro.plan}
         numeroSemana={numeroSemana}
         hrefSemana={(n) => `/clientes/${cliente.id}/nutricion?plan=${registro.id}&semana=${n}`}
+        hrefIntercambio={(u) => `/clientes/${cliente.id}/nutricion/intercambio?plan=${registro.id}&s=${u.semana}&d=${u.dia}&c=${u.comida}&i=${u.item}`}
         notas={registro.notas}
         acciones={
           <Link href={`/exportar/${cliente.id}?plan=${registro.id}`} className="boton-secundario">

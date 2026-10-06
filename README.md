@@ -27,15 +27,18 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
    - [3.9 Cambios y bajas de clientes](#39-cambios-y-bajas-de-clientes)
    - [3.10 Tu cuenta y tu contraseña](#310-tu-cuenta-y-tu-contraseña)
    - [3.11 Avisos por Telegram](#311-avisos-por-telegram)
+   - [3.12 Bitácora de entrenamiento de tus clientes](#312-bitácora-de-entrenamiento-de-tus-clientes)
 4. [Guía para los clientes](#4-guía-para-los-clientes)
    - [4.1 Tu primer ingreso](#41-tu-primer-ingreso)
    - [4.2 Qué encuentras en la app](#42-qué-encuentras-en-la-app)
-   - [4.3 Registrar tu semana](#43-registrar-tu-semana-cada-domingo-1-minuto)
-   - [4.4 Activar los avisos por Telegram](#44-activar-los-avisos-por-telegram-opcional)
-   - [4.5 Descargar tu plan del mes](#45-descargar-tu-plan-del-mes)
-   - [4.6 Tener MoniFit en tu celular como una app](#46-tener-monifit-en-tu-celular-como-una-app)
-   - [4.7 Tu cuenta y tu contraseña](#47-tu-cuenta-y-tu-contraseña)
-   - [4.8 Pequeño glosario](#48-pequeño-glosario)
+   - [4.3 Registrar tus entrenamientos](#43-registrar-tus-entrenamientos-bitácora)
+   - [4.4 Cambiar un alimento de tu plan](#44-cambiar-un-alimento-de-tu-plan)
+   - [4.5 Registrar tu semana](#45-registrar-tu-semana-cada-domingo-1-minuto)
+   - [4.6 Activar los avisos por Telegram](#46-activar-los-avisos-por-telegram-opcional)
+   - [4.7 Descargar tu plan del mes](#47-descargar-tu-plan-del-mes)
+   - [4.8 Tener MoniFit en tu celular como una app](#48-tener-monifit-en-tu-celular-como-una-app)
+   - [4.9 Tu cuenta y tu contraseña](#49-tu-cuenta-y-tu-contraseña)
+   - [4.10 Pequeño glosario](#410-pequeño-glosario)
 5. [Rutina de trabajo recomendada para Moni](#5-rutina-de-trabajo-recomendada-para-moni)
 6. [Preguntas frecuentes](#6-preguntas-frecuentes)
 7. [Privacidad y seguridad](#7-privacidad-y-seguridad)
@@ -56,6 +59,9 @@ Cada cliente tiene su propio acceso para consultar **solo su información** y de
 | Ver el expediente de **todos** los clientes | ✅ | — |
 | Ver **su propio** resumen, rutina, progreso y plan de nutrición | — | ✅ |
 | Registrar cómo le fue cada semana con su plan de nutrición | ✅ | ✅ |
+| Registrar sus entrenamientos en la bitácora | ✅ | ✅ |
+| Cambiar un alimento del plan por uno equivalente | ✅ | ✅ (solo el suyo) |
+| Agregar videos a los ejercicios | ✅ | — |
 | Exportar el plan mensual a PDF o Excel | ✅ | ✅ (solo el suyo) |
 | Cambiar su propia contraseña | ✅ | ✅ |
 | Conectar el bot de Telegram y enviar mensajes a clientes | ✅ | — |
@@ -66,8 +72,9 @@ la aplicación revisa quién eres en cada pantalla y en cada acción.
 
 ### 1.1 ¿Qué información captura cada quien?
 
-**Casi todo lo captura Moni.** El cliente solo crea su contraseña, acepta el aviso de privacidad y, una vez a la
-semana, registra cómo le fue con su plan. Todo lo demás lo ve, pero no lo edita.
+**Casi todo lo captura Moni.** El cliente solo crea su contraseña, acepta el aviso de privacidad, registra cada
+semana cómo le fue con su plan y, después de entrenar, su sesión en la bitácora. Si quiere, puede cambiar
+alimentos de su menú por otros equivalentes. Todo lo demás lo ve, pero no lo edita.
 
 | Información | ¿Quién la captura? | ¿Cuándo? | Dónde |
 |---|---|---|---|
@@ -80,6 +87,8 @@ semana, registra cómo le fue con su plan. Todo lo demás lo ve, pero no lo edit
 | Su propia contraseña | **Cliente** | Primer ingreso (y cuando quiera cambiarla) | *Mi cuenta* |
 | Aceptación del aviso de privacidad | **Cliente** | Primer ingreso, una sola vez | Se le pide al entrar |
 | **Seguimiento semanal** | **Cliente** (o Moni por él) | **Cada semana**, de preferencia el domingo | *Mi nutrición → Seguimiento semanal* |
+| **Bitácora de entrenamiento** (series, repeticiones y peso) | **Cliente** (o Moni si entrenó con ella) | Después de cada sesión | *Mi entrenamiento* |
+| Cambios de alimentos del plan | **Cliente** (opcional) | Cuando no tenga o no quiera un alimento | *Mi nutrición → ⇄ Cambiar* |
 | Vincular Telegram | **Cliente** (opcional) | Cuando quiera | *Mi cuenta → Avisos por Telegram* |
 
 #### El seguimiento semanal: lo único que llena el cliente con regularidad
@@ -118,8 +127,22 @@ semana, registra cómo le fue con su plan. Todo lo demás lo ve, pero no lo edit
 
 ### Tu pantalla principal
 
-- **Barra rosa de la izquierda:** menú con *Clientes*, *Rutinas*, *Ejercicios* y *Avisos*. Abajo aparece tu
-  nombre, el enlace **Mi cuenta** y el botón **Salir**.
+- **Barra rosa de la izquierda:** menú con *Hoy*, *Clientes*, *Rutinas*, *Ejercicios*, *Avisos* y *Ayuda*. Abajo
+  aparece tu nombre, el enlace **Mi cuenta** y el botón **Salir**.
+- **Hoy** (es lo primero que ves al entrar): tus pendientes del día, cada uno con un enlace directo a la
+  pestaña del cliente donde se resuelve:
+  - 📝 quién **no ha registrado su semana**;
+  - 📏 a quién le **toca medición** (más de 4 semanas sin medir composición);
+  - ⏳ **planes de nutrición por vencer** y 🥗 clientes **sin plan vigente**;
+  - 🏋️ clientes **sin rutina**, ⚠️ con **adherencia baja** (menos de 60 %) y 💤 que **dejaron de registrar
+    entrenamientos**;
+  - 🔑 **accesos pendientes** (sin acceso, aún no entran o sin aceptar el aviso de privacidad).
+
+  Arriba ves el resumen (clientes activos, entrenamientos y semanas registradas, adherencia promedio) y abajo la
+  **actividad de la semana**. Los clientes con acceso desactivado (baja temporal) no aparecen.
+
+  <p align="center"><img src="docs/capturas/36-hoy.png" alt="Pantalla Hoy de Moni"></p>
+
 - **Clientes:** una tarjeta por cliente con su objetivo, peso actual, % de grasa, rutina asignada y si
   tiene o no acceso a la app.
 
@@ -353,11 +376,17 @@ Puedes filtrarlas por objetivo.
 Trae 45 ejercicios propuestos.
 
 <p align="center"><img src="docs/capturas/17-ejercicios.png" alt="Catálogo de ejercicios"></p>
- Para crear uno nuevo presiona **+ Nuevo ejercicio** y marca, para cada músculo,
+
+Para crear uno nuevo presiona **+ Nuevo ejercicio** y marca, para cada músculo,
 si es **Principal**, **Secundario** o no participa (—). El dibujo se actualiza al momento: esa será la imagen
 del ejercicio. Un ejercicio que se usa en alguna rutina **no se puede eliminar** hasta quitarlo de ellas.
 
 <p align="center"><img src="docs/capturas/18-editar-ejercicio.png" alt="Edición de un ejercicio y sus músculos"></p>
+
+**Videos:** al crear o editar un ejercicio puedes pegar en **Video de cómo se hace** el enlace de un video de
+YouTube (u otra página). Tus clientes verán **▶ Ver video** junto al ejercicio, en su rutina y en la bitácora. Si
+no pones ninguno, verán **▶ Ver cómo se hace**, que abre una búsqueda en YouTube con el nombre del ejercicio. En
+el catálogo, los ejercicios con video propio muestran **▶ Video**.
 
 
 ### 3.8 Plan de nutrición mensual
@@ -400,6 +429,21 @@ Expediente → pestaña **Nutrición**. El cliente debe tener **al menos un peso
 
 <p align="center"><img src="docs/capturas/20-nutricion-menu.png" alt="Menú diario del plan de nutrición"></p>
 
+
+#### Cambiar alimentos (intercambio)
+Junto a cada alimento del menú aparece **⇄ Cambiar**. Al presionarlo se muestran los alimentos **equivalentes**:
+- Son de la misma categoría (una proteína por otra, un cereal por otro…).
+- Respetan las alergias, intolerancias y aversiones del cliente y los alimentos excluidos del plan.
+- La porción ya viene recalculada para aportar **lo mismo** del nutriente principal. Por ejemplo, 100 g de pavo
+  molido se cambian por 105 g de tilapia, con la misma proteína.
+
+Se puede cambiar **solo en esa comida** o **en toda la semana**; los totales del día y la lista de compras se
+actualizan solos. El alimento cambiado muestra *"en lugar de…"*, para que sepas qué cambió el cliente. Si una
+opción no alcanza a dar lo mismo, por el tope de porción (el huevo, por ejemplo, tiene un máximo de 3 piezas),
+aparece la advertencia **"Aporta menos…"**. Tanto tú como el cliente pueden hacer cambios.
+
+<p align="center"><img src="docs/capturas/39-menu-cambiar.png" alt="Menú con enlaces para cambiar alimentos"></p>
+<p align="center"><img src="docs/capturas/38-intercambio.png" alt="Elegir un alimento equivalente"></p>
 
 #### Seguimiento semanal
 Debajo del menú está **Seguimiento semanal**. Cada semana registra (o el cliente registra desde su portal):
@@ -504,14 +548,30 @@ datos de salud en estos mensajes.
 | Quiero cambiar la foto o la descripción del bot | En @BotFather: `/setuserpic` y `/setdescription`. |
 
 **Clientes:** cada quien activa Telegram por su cuenta desde **Mi cuenta** (tú no puedes hacerlo por ellos);
-la [guía para clientes, 4.4](#44-activar-los-avisos-por-telegram-opcional) lo explica paso a paso. En
+la [guía para clientes, 4.4](#46-activar-los-avisos-por-telegram-opcional) lo explica paso a paso. En
 *Avisos → Clientes con acceso* y en *Acceso a la aplicación* de cada cliente ves quién ya lo tiene. Si alguien
 bloquea el bot, la app lo desvincula sola. Abajo, el **Historial** muestra cada aviso enviado y si hubo algún error.
+
+### 3.12 Bitácora de entrenamiento de tus clientes
+
+En el expediente de cada cliente, pestaña **Entrenamiento**, ves lo que registra después de entrenar:
+- **Historial de sesiones:** fecha, día de la rutina, cuántos ejercicios hizo, qué tan pesada la sintió (1–5) y
+  sus notas. Toca una sesión para ver series, repeticiones y peso de cada ejercicio.
+- **Progreso por ejercicio:** primera carga, última, mejor y el **avance** en kilos. Sirve para decidir cuándo
+  subir el peso o cambiar la rutina.
+- **Registrar tú la sesión:** si el cliente entrenó contigo, llénala ahí mismo; aparecerá como *"registrada por Moni"*.
+
+La pantalla **Hoy** te avisa quién dejó de registrar entrenamientos, y la actividad de la semana muestra cada sesión.
+
+<p align="center"><img src="docs/capturas/37-bitacora.png" alt="Bitácora de entrenamiento"></p>
 
 ## 4. Guía para los clientes
 
 *Esta sección está escrita para los clientes de Moni.*
 
+> **También dentro de la app:** el menú **Ayuda** (y el enlace *Ayuda* al pie del inicio de sesión) tiene esta
+> misma guía resumida, por temas.
+>
 > **Moni:** esta guía es pública; tus clientes la pueden abrir sin crear ninguna cuenta. Compárteles este enlace:
 > **https://github.com/cj-developers-qro/monica-app#4-guía-para-los-clientes**
 
@@ -534,13 +594,15 @@ bloquea el bot, la app lo desvincula sola. Abajo, el **Historial** muestra cada 
 5. Entras a **Mi resumen**. ¡Listo!
 
 ### 4.2 Qué encuentras en la app
-La barra rosa de arriba tiene tres secciones:
+La barra rosa de arriba tiene estas secciones:
 
 | Sección | Qué ves |
 |---|---|
 | **Mi resumen** | Tu peso, % de grasa y % de músculo más recientes, cómo va tu progreso, las fechas de tu plan de nutrición y **tu rutina**: la imagen de los músculos que trabajas y los ejercicios de cada día, con series, repeticiones y descanso. |
+| **Mi entrenamiento** | La bitácora: registra tus sesiones y ve cómo suben tus cargas ([4.3](#43-registrar-tus-entrenamientos-bitácora)). |
 | **Mi progreso** | Tus gráficas de peso, grasa y músculo a lo largo del tiempo, y la tabla con tus medidas. |
-| **Mi nutrición** | Tu menú del mes, semana por semana: cada comida con sus porciones en gramos y en medidas caseras (tazas, piezas, cucharadas), la lista de compras de la semana y el **seguimiento semanal**. |
+| **Mi nutrición** | Tu menú del mes, semana por semana: cada comida con sus porciones en gramos y en medidas caseras (tazas, piezas, cucharadas), la lista de compras de la semana, el **seguimiento semanal** y **⇄ Cambiar** para cambiar alimentos ([4.4](#44-cambiar-un-alimento-de-tu-plan)). |
+| **Ayuda** | Esta guía, resumida y por temas. |
 
 <p align="center"><img src="docs/capturas/25-portal-resumen.png" alt="Portal del cliente: Mi resumen"></p>
 
@@ -560,7 +622,31 @@ La barra rosa de arriba tiene tres secciones:
 
 <p align="center"><img src="docs/capturas/27-portal-nutricion.png" alt="Portal del cliente: Mi nutrición"></p>
 
-### 4.3 Registrar tu semana (cada domingo, 1 minuto)
+<p align="center"><img src="docs/capturas/40-ayuda.png" alt="Ayuda dentro de la app" width="560"></p>
+
+### 4.3 Registrar tus entrenamientos (bitácora)
+Después de entrenar (te toma un minuto):
+1. Entra a **Mi entrenamiento**.
+2. Elige el **día de tu rutina** que hiciste (Día A, Día B…). La app te sugiere el que sigue.
+3. Verás tus ejercicios con lo que hiciste **la última vez**. Ajusta **series**, **repeticiones** y **peso (kg)**;
+   deja el peso vacío si fue con tu peso corporal. **Desmarca** lo que no hiciste.
+4. Opcional: qué tan pesada se sintió (1 = muy fácil, 5 = al límite) y notas, por ejemplo una molestia.
+5. Presiona **Guardar sesión**.
+
+Abajo verás tu **Progreso por ejercicio**, con tu primera carga, la última, la mejor y cuánto has subido, y el
+**historial** de tus sesiones. Si te equivocaste, abre la sesión y presiona **Borrar sesión**. En cada ejercicio,
+**▶ Ver cómo se hace** te muestra un video.
+
+### 4.4 Cambiar un alimento de tu plan
+¿No tienes un alimento o no se te antoja?
+1. En **Mi nutrición**, toca **⇄ Cambiar** junto al alimento.
+2. Elige otro de la lista. La **porción ya viene calculada** para que te aporte lo mismo, y solo aparecen
+   alimentos permitidos para ti.
+3. Presiona **Cambiar solo aquí** (esa comida) o **En toda la semana** (cada vez que aparece esa semana).
+
+El alimento nuevo muestra *"en lugar de…"* y la lista de compras se actualiza. Moni también ve tus cambios.
+
+### 4.5 Registrar tu semana (cada domingo, 1 minuto)
 Es lo único que capturas con regularidad, y es muy importante: con esto **Moni ajusta tu plan del siguiente mes**.
 
 1. Entra a **Mi nutrición** y baja hasta **Seguimiento semanal**.
@@ -578,7 +664,7 @@ Es lo único que capturas con regularidad, y es muy importante: con esto **Moni 
 
 > Sé honesto: un 60 % real ayuda más que un 100 % que no fue. Moni usa estos datos para ajustar tu plan, no para regañarte.
 
-### 4.4 Activar los avisos por Telegram (opcional)
+### 4.6 Activar los avisos por Telegram (opcional)
 Con Telegram recibes en tu celular:
 - 🥗 **"Tu nuevo plan de nutrición ya está listo"**, cuando Moni te prepara uno nuevo.
 - 🏋️ **"Moni te asignó una nueva rutina"**, cuando cambia tu rutina.
@@ -613,13 +699,13 @@ esos solo se ven dentro de la app, con tu contraseña.
 | Ya no me llegan avisos | Si bloqueaste o detuviste el bot, la vinculación se quitó sola. Vuelve a vincularlo desde **Mi cuenta** (y desbloquea el bot si lo bloqueaste). |
 | Le escribí al bot y no me contesta lo que pregunté | El bot solo **envía** avisos; no lee mensajes. Para hablar con Moni, usa su número personal. |
 
-### 4.5 Descargar tu plan del mes
+### 4.7 Descargar tu plan del mes
 En **Mi nutrición** presiona **Exportar mi plan** (en **Mi resumen** el botón se llama **Exportar plan**):
 - **Descargar PDF / Imprimir:** en la ventana de impresión elige **"Guardar como PDF"** como destino. Incluye
   las 4 semanas del menú, las listas de compras, las recomendaciones y tu rutina.
 - **Descargar Excel (CSV):** una tabla con cada alimento de cada comida, por si quieres organizarte en Excel.
 
-### 4.6 Tener MoniFit en tu celular como una app
+### 4.8 Tener MoniFit en tu celular como una app
 - **iPhone (Safari):** abre https://moni-fit.com → botón **Compartir** (el cuadrito con flecha) → **Agregar a
   pantalla de inicio** → **Agregar**.
 - **Android (Chrome):** abre https://moni-fit.com → menú **⋮** → **Agregar a la pantalla principal** → **Agregar**.
@@ -628,7 +714,7 @@ Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 
 <p align="center"><img src="docs/capturas/28-portal-movil.png" alt="Portal del cliente en el celular" width="320"></p>
 
-### 4.7 Tu cuenta y tu contraseña
+### 4.9 Tu cuenta y tu contraseña
 - **Cambiar tu contraseña:** **Mi cuenta** → escribe la actual y la nueva dos veces → **Cambiar contraseña**.
 - **¿Olvidaste tu contraseña?** Pídele a Moni que te genere una nueva temporal; la app te pedirá cambiarla al entrar.
 - **Bloqueo:** si escribes mal la contraseña 5 veces seguidas, espera 15 minutos antes de intentarlo de nuevo.
@@ -636,7 +722,7 @@ Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 - **Tus datos:** solo tú y Moni pueden verlos. Para consultar, corregir o borrar tus datos, escribe a
   **monica@moni-fit.com** (lo explica el aviso de privacidad, al pie de la pantalla de inicio de sesión).
 
-### 4.8 Pequeño glosario
+### 4.10 Pequeño glosario
 | Término | Qué significa |
 |---|---|
 | **% de grasa** | Qué parte de tu peso es grasa. |
@@ -653,6 +739,7 @@ Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 
 | Cuándo | Qué hacer |
 |---|---|
+| Cada mañana | Revisar **Hoy**: pendientes y actividad de tus clientes. |
 | Cliente nuevo | Onboarding → crear acceso → registrar medidas y composición → asignar o personalizar rutina → generar plan de nutrición. |
 | Cada semana | Revisar el **Seguimiento semanal** de nutrición de cada cliente (con Telegram vinculado, te llega un aviso cuando lo registran). |
 | Cada 2–4 semanas | Registrar **medidas** y **composición corporal**; revisar **Recomposición**. |
@@ -667,6 +754,14 @@ Aparecerá el ícono rosa de MoniFit junto a tus otras apps.
 Hace falta al menos una medición en *Composición corporal* con % de grasa **y** % de músculo; el peso del
 cuestionario de alta no basta. Con una medición verás el **punto de partida**; con la segunda (2–4 semanas
 después), el diagnóstico completo y las gráficas.
+
+**¿Puedo poner mis propios videos de los ejercicios?**
+Sí: en *Ejercicios*, abre el ejercicio y pega el enlace en **Video de cómo se hace**. Puede ser un video tuyo
+subido a YouTube (aunque sea "no listado").
+
+**En el intercambio, ¿por qué algunas opciones dicen "Aporta menos…"?**
+Cada alimento tiene una porción máxima razonable (por ejemplo, 3 huevos). Si con ese tope no alcanza a dar lo
+mismo que el original, la app lo avisa para que el cliente elija con información.
 
 **¿Por qué no puedo generar el plan de nutrición?**
 El cliente necesita al menos un peso registrado en *Composición corporal*.
@@ -809,6 +904,11 @@ src/lib/auth.ts              sesiones y verificación de roles
 src/lib/contrasenas.ts       cifrado (scrypt) y contraseñas temporales
 src/lib/privacidad.ts        datos del aviso de privacidad (completar antes de publicar)
 src/lib/telegram.ts          cliente de la API de bots de Telegram (token, webhook, envío)
+src/lib/videos.ts            enlace al video de cada ejercicio (propio o búsqueda en YouTube)
+src/components/BitacoraEntrenamiento.tsx   bitácora (registro, historial y progreso por ejercicio)
+src/components/VistaIntercambio.tsx        elegir un alimento equivalente
+src/app/(admin)/hoy/         pantalla Hoy de Moni (pendientes y actividad)
+src/app/(legal)/ayuda/       Ayuda dentro de la app (pública; con guía rápida para Moni)
 src/lib/notificaciones.ts    avisos a clientes y administradora, con historial
 src/app/api/telegram/        webhook del bot (vinculación con /start <código>, /desvincular)
 src/app/(admin)/avisos/      pantalla Avisos (conectar el bot, mensajes, historial)

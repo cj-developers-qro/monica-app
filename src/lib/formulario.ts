@@ -30,3 +30,12 @@ export function hoy() {
   const z = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
 }
+
+/** Posición de un alimento en el plan (semana, día, comida y alimento) desde la URL. */
+export function ubicacionDeConsulta(q: Record<string, string | string[] | undefined>) {
+  const n = (clave: string) => {
+    const v = Number(q[clave]);
+    return Number.isInteger(v) && v >= 0 ? v : -1;
+  };
+  return { semana: n("s"), dia: n("d"), comida: n("c"), item: n("i") };
+}

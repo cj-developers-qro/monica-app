@@ -8,7 +8,7 @@ import { IconoMoniFit, NOMBRE_APP } from "@/components/Logo";
 import { requerirAccesoCliente } from "@/lib/auth";
 import { listarAsignaciones, listarPlanes, obtenerCliente, obtenerPlan } from "@/lib/datos";
 import { hoy } from "@/lib/formulario";
-import type { Macros } from "@/lib/nutricion";
+import { medidaCasera, type Macros } from "@/lib/nutricion";
 import { OBJETIVOS } from "@/lib/objetivos";
 
 export const metadata: Metadata = { title: "Plan mensual" };
@@ -112,7 +112,7 @@ export default async function ExportarPlan({ params, searchParams }: PageProps<"
                           {c.items.map((i) => (
                             <li key={i.clave} className="flex justify-between gap-2">
                               <span>{i.nombre}</span>
-                              <span className="shrink-0 tabular-nums text-slate-500">{i.gramos} g{i.medida ? ` (${i.medida})` : ""}</span>
+                              <span className="shrink-0 tabular-nums text-slate-500">{i.gramos} g{medidaCasera(i.clave, i.gramos) ? ` (${medidaCasera(i.clave, i.gramos)})` : ""}</span>
                             </li>
                           ))}
                         </ul>

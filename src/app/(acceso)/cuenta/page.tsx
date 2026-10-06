@@ -59,7 +59,7 @@ export default async function Cuenta() {
         </section>
       )}
       <div className="mt-6 flex items-center justify-between text-sm">
-        {primera ? <span /> : <Link href={usuario.rol === "admin" ? "/" : "/portal"} className="enlace">← Volver</Link>}
+        {primera ? <span /> : <Link href={usuario.rol === "admin" ? "/hoy" : "/portal"} className="enlace">← Volver</Link>}
         <form action={cerrarSesion}>
           <button type="submit" className="text-slate-500 hover:text-pink-700">Cerrar sesión</button>
         </form>

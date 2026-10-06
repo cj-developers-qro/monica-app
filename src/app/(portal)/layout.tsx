@@ -16,11 +16,13 @@ export default async function LayoutPortal({ children }: LayoutProps<"/">) {
             <MarcaEnBarra />
           </Link>
           <Navegacion
-            className="order-3 flex w-full gap-1 overflow-x-auto md:order-none md:w-auto md:flex-1"
+            className="order-3 flex w-full gap-1 overflow-x-auto"
             enlaces={[
-              { href: "/portal", texto: "Mi resumen" },
+              { href: "/portal", texto: "Mi resumen", exacto: true },
+              { href: "/portal/entrenamiento", texto: "Mi entrenamiento" },
               { href: "/portal/progreso", texto: "Mi progreso" },
               { href: "/portal/nutricion", texto: "Mi nutrición" },
+              { href: "/ayuda", texto: "Ayuda" },
             ]}
           />
           <MenuUsuario nombre={usuario.nombre} rol="Cliente" className="ml-auto" />

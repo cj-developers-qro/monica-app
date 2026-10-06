@@ -34,6 +34,7 @@ export default async function LayoutCliente({ params, children }: LayoutProps<"/
             { ruta: "composicion", texto: "Composición corporal" },
             { ruta: "recomposicion", texto: "Recomposición" },
             { ruta: "rutinas", texto: "Rutinas" },
+            { ruta: "entrenamiento", texto: "Entrenamiento" },
             { ruta: "nutricion", texto: "Nutrición" },
           ]}
         />

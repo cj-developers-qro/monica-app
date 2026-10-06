@@ -50,6 +50,20 @@ export function FormularioEjercicio({
             <span className="etiqueta">Técnica / indicaciones</span>
             <textarea name="descripcion" rows={3} defaultValue={ejercicio?.descripcion} className="campo" />
           </label>
+          <label className="sm:col-span-2">
+            <span className="etiqueta">Video de cómo se hace (opcional)</span>
+            <input
+              name="video_url"
+              type="url"
+              defaultValue={ejercicio?.video_url ?? ""}
+              placeholder="https://www.youtube.com/watch?v=…"
+              className="campo"
+            />
+            <span className="mt-1 block text-xs text-slate-500">
+              Pega el enlace de un video de YouTube (o de otra página). Si lo dejas vacío, el cliente verá una búsqueda en YouTube con el nombre del
+              ejercicio.
+            </span>
+          </label>
         </section>
 
         <fieldset className="tarjeta p-5">

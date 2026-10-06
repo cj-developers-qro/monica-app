@@ -6,7 +6,7 @@ import { requerirAccesoCliente, requerirAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { entero, fecha, numero, texto, type EstadoFormulario } from "@/lib/formulario";
 import { avisarAdministradoras, avisarCliente } from "@/lib/notificaciones";
-import { ajusteAdaptativo, generarPlan } from "@/lib/nutricion";
+import { ajusteAdaptativo, aplicarIntercambio, generarPlan } from "@/lib/nutricion";
 import { escaparHtml } from "@/lib/telegram";
 import { esObjetivo } from "@/lib/objetivos";
 
@@ -124,4 +124,28 @@ export async function eliminarSeguimiento(clienteId: number, id: number) {
   await requerirAdmin();
   db().prepare("DELETE FROM seguimiento_nutricion WHERE id = ? AND cliente_id = ?").run(id, clienteId);
   revalidatePath(`/clientes/${clienteId}`, "layout");
+}
+
+/**
+ * Cambia un alimento del plan por un equivalente (en esa comida o en toda la semana). Lo puede hacer
+ * el propio cliente o la administradora; vuelve a la semana del plan donde se hizo el cambio.
+ */
+export async function intercambiarAlimento(clienteId: number, planId: number, fd: FormData): Promise<void> {
+  const usuario = await requerirAccesoCliente(clienteId);
+  const fila = db().prepare("SELECT plan FROM planes_nutricion WHERE id = ? AND cliente_id = ?").get(planId, clienteId) as { plan: string } | undefined;
+  const cliente = db().prepare("SELECT onboarding FROM clientes WHERE id = ?").get(clienteId) as { onboarding: string } | undefined;
+  const u = { semana: entero(fd, "s", -1), dia: entero(fd, "d", -1), comida: entero(fd, "c", -1), item: entero(fd, "i", -1) };
+  const volver =
+    usuario.rol === "admin"
+      ? `/clientes/${clienteId}/nutricion?plan=${planId}&semana=${u.semana + 1}`
+      : `/portal/nutricion?plan=${planId}&semana=${u.semana + 1}`;
+  if (!fila || !cliente) redirect(volver);
+
+  const alcance = texto(fd, "alcance") === "semana" ? "semana" : "comida";
+  const resultado = aplicarIntercambio(JSON.parse(fila.plan), JSON.parse(cliente.onboarding || "{}"), u, texto(fd, "clave"), alcance);
+  if (typeof resultado !== "string") {
+    db().prepare("UPDATE planes_nutricion SET plan = ? WHERE id = ? AND cliente_id = ?").run(JSON.stringify(resultado), planId, clienteId);
+    revalidatePath("/", "layout");
+  }
+  redirect(`${volver}#dia-${u.dia}`);
 }

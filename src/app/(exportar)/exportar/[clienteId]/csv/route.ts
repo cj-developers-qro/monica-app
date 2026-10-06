@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { usuarioActual } from "@/lib/auth";
 import { obtenerCliente, obtenerPlan } from "@/lib/datos";
+import { medidaCasera } from "@/lib/nutricion";
 
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/exportar/[client
         for (const i of c.items)
           filas.push([
             s.numero, d.fecha, DIAS[(new Date(`${d.fecha}T12:00:00`).getDay() + 6) % 7], d.entreno ? "Entrenamiento" : "Descanso",
-            c.nombre, i.nombre, i.gramos, i.medida, i.kcal, i.p, i.c, i.g,
+            c.nombre, i.nombre, i.gramos, medidaCasera(i.clave, i.gramos), i.kcal, i.p, i.c, i.g,
           ]);
   const csv = "﻿" + filas.map((f) => f.map(celda).join(",")).join("\r\n");
   const nombre = `plan-${cliente.nombre.normalize("NFD").replace(/[^\w]+/g, "-").toLowerCase()}-${registro.plan.fecha_inicio}.csv`;

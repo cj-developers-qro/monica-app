@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Iniciar sesión" };
 
 export default async function Login() {
   const usuario = await usuarioActual();
-  if (usuario) redirect(usuario.debe_cambiar ? "/cuenta?primera=1" : usuario.rol === "admin" ? "/" : "/portal");
+  if (usuario) redirect(usuario.debe_cambiar ? "/cuenta?primera=1" : usuario.rol === "admin" ? "/hoy" : "/portal");
 
   return (
     <>

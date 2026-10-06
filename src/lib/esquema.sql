@@ -161,3 +161,35 @@ CREATE TABLE IF NOT EXISTS notificaciones (
 );
 
 CREATE INDEX IF NOT EXISTS idx_notificaciones_usuario ON notificaciones(usuario_id, tipo, creado_en);
+
+-- Bitácora de entrenamiento: cada sesión que el cliente (o Moni) registra de su rutina.
+CREATE TABLE IF NOT EXISTS sesiones_entrenamiento (
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
+  rutina_id INTEGER REFERENCES rutinas(id) ON DELETE SET NULL,
+  -- Nombre del día de la rutina ("Día A", "Torso"…) y de la rutina al momento de registrar.
+  dia TEXT NOT NULL,
+  rutina_nombre TEXT NOT NULL,
+  fecha TEXT NOT NULL,
+  esfuerzo INTEGER,
+  notas TEXT,
+  registrado_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  creado_en TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Lo que se hizo de cada ejercicio en la sesión (se guarda el nombre por si cambia la rutina).
+CREATE TABLE IF NOT EXISTS sesion_ejercicios (
+  id INTEGER PRIMARY KEY,
+  sesion_id INTEGER NOT NULL REFERENCES sesiones_entrenamiento(id) ON DELETE CASCADE,
+  ejercicio_id INTEGER REFERENCES ejercicios(id) ON DELETE SET NULL,
+  ejercicio_nombre TEXT NOT NULL,
+  orden INTEGER NOT NULL,
+  completado INTEGER NOT NULL DEFAULT 1,
+  series INTEGER,
+  repeticiones INTEGER,
+  peso_kg REAL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sesiones_cliente ON sesiones_entrenamiento(cliente_id, fecha);
+CREATE INDEX IF NOT EXISTS idx_sesion_ejercicios ON sesion_ejercicios(sesion_id);
+CREATE INDEX IF NOT EXISTS idx_sesion_ejercicios_ejercicio ON sesion_ejercicios(ejercicio_id);
