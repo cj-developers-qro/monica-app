@@ -1,4 +1,4 @@
-# Túnel de Cloudflare: moni-fit.com y www.moni-fit.com -> MoniFit en el servidor (127.0.0.1:3000).
+# Túnel de Cloudflare: MoniFit y seg-mbag en el servidor.
 # cloudflared corre como servicio en el servidor con el token (deploy/instalar-servidor.sh).
 resource "random_bytes" "secreto_tunel" {
   length = 32
@@ -18,6 +18,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "monifit" {
     ingress = [
       { hostname = var.dominio, service = "http://127.0.0.1:3000" },
       { hostname = "www.${var.dominio}", service = "http://127.0.0.1:3000" },
+      { hostname = "seg-mbag.${var.dominio}", service = "http://127.0.0.1:3001" },
       { service = "http_status:404" },
     ]
   }
@@ -25,7 +26,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "monifit" {
 
 # Solo los registros web. Los del correo de GoDaddy (MX, SPF, DMARC, DKIM, email, autodiscover) no se tocan.
 resource "cloudflare_dns_record" "web" {
-  for_each = var.publicar_dns ? toset([var.dominio, "www.${var.dominio}"]) : toset([])
+  for_each = var.publicar_dns ? toset([var.dominio, "www.${var.dominio}", "seg-mbag.${var.dominio}"]) : toset([])
   zone_id  = var.zona_id
   name     = each.value
   type     = "CNAME"
